@@ -7,15 +7,24 @@ from .tile import counts_to_27
 
 def seven_pairs_shanten(tiles: list[str]) -> int:
     counts = counts_to_27(tiles)
+    # count//2：一组杠(4张)按"两对"计入七对结构——这是龙七对规则的本意（1组杠=两对），
+    # 故 4+4+4+2 判为七对和了(-1)，并非 bug。勿改成 count==2 才算一对。
     pair_units = sum(count // 2 for count in counts)
     if pair_units >= 7:
         return -1
     return 6 - pair_units
 
 
-def standard_shanten(tiles: list[str]) -> int:
+def standard_shanten(tiles: list[str], melds_done: int = 0) -> int:
+    """标准型向听。
+
+    `melds_done`=已锁定的副露（碰/杠）组数，每组折算为一个已完成面子：
+    手牌内只需再凑 `meld_budget = 4 - melds_done` 个面子。melds_done=0 时退化为原式
+    `8 - 2*melds - taatsu - has_pair`，向后兼容。
+    """
     counts = counts_to_27(tiles)
-    best = 8
+    meld_budget = 4 - melds_done
+    best = 2 * meld_budget
 
     pair_choices = [None]
     pair_choices.extend(index for index, count in enumerate(counts) if count >= 2)
@@ -27,13 +36,17 @@ def standard_shanten(tiles: list[str]) -> int:
             mutable[pair_index] -= 2
             has_pair = 1
         melds, taatsu = _best_meld_taatsu(tuple(mutable))
-        taatsu = min(taatsu, 4 - melds)
-        shanten = 8 - (2 * melds) - taatsu - has_pair
+        melds = min(melds, meld_budget)
+        taatsu = min(taatsu, meld_budget - melds)
+        shanten = 2 * meld_budget - (2 * melds) - taatsu - has_pair
         best = min(best, shanten)
     return best
 
 
-def best_shanten(tiles: list[str]) -> int:
+def best_shanten(tiles: list[str], melds_done: int = 0) -> int:
+    # 七对系要求门清，副露后不适用，故有副露时只看标准型。
+    if melds_done > 0:
+        return standard_shanten(tiles, melds_done)
     return min(standard_shanten(tiles), seven_pairs_shanten(tiles))
 
 

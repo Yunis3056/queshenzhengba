@@ -4,7 +4,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from .models import GameState, Region, RegionConfig, TileObservation
+from .models import GameState, Region, RegionConfig, TileObservation, expected_hand_counts
 from .paths import MISSING_SUIT_TEMPLATES_DIR, TEMPLATES_DIR
 from .tile import ALL_TILES, normalize_suit, sort_tiles
 
@@ -94,16 +94,19 @@ class TemplateRecognizer:
                 all_obs.extend(TileObservation(tile=tile, confidence=1.0, region_id="visible") for tile in meld)
 
         raw_own_obs = raw_hand_obs + raw_drawn_obs + raw_self_meld_obs
-        own_obs = hand_obs + drawn_obs + self_meld_obs
         uncertain = [obs for obs in raw_own_obs if obs.confidence < self.config.threshold]
-        confidences = [obs.confidence for obs in own_obs]
+        # P2: 低置信牌（已被剔成 X）也按原始置信度纳入 min，否则半数手牌为 X 时上报置信度仍可能虚高。
+        confidences = [obs.confidence for obs in raw_own_obs]
         confidence = min(confidences) if confidences else 0.0
         hand_display = [
             obs.tile if obs.confidence >= self.config.threshold else "X"
             for obs in raw_hand_obs
         ]
         hand_tiles = [obs.tile for obs in hand_obs]
-        if raw_hand_obs and len(hand_tiles) not in self.config.expected_hand_counts:
+        self_melds = _group_melds([obs.tile for obs in self_meld_obs])
+        # 暗手期望张数随副露组数浮动（每组 -3）；折算只看组数，对碰(3张)/杠(4张)都鲁棒。
+        valid_hand_counts = expected_hand_counts(len(self_melds))
+        if raw_hand_obs and len(hand_tiles) not in valid_hand_counts:
             confidence = min(confidence, 0.0)
         drawn_tile = drawn_obs[0].tile if drawn_obs else None
 
@@ -112,7 +115,7 @@ class TemplateRecognizer:
             hand=sort_tiles(hand_tiles),
             hand_display=hand_display,
             drawn_tile=drawn_tile,
-            self_melds=_group_melds([obs.tile for obs in self_meld_obs]),
+            self_melds=self_melds,
             opponent_discards=opponent_discards,
             opponent_melds=opponent_melds,
             visible_tiles=[obs.tile for obs in all_obs],

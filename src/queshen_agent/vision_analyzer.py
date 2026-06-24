@@ -11,6 +11,7 @@ from typing import Any
 
 from .models import RecommendationResult
 from .paths import PROJECT_ROOT, RULES_PATH
+from .tile import suit_label, tile_label
 
 
 VISION_CONFIG_PATH = PROJECT_ROOT / "config" / "vision_analyzer.json"
@@ -214,18 +215,29 @@ def _recommendation_from_payload(payload: dict[str, Any]) -> RecommendationResul
     )
 
 
+def _safe_label(tile: str) -> str:
+    # P4：视觉路径也走 tile_label 归一（7m→七万），与本地路径一致；非法牌码回退原串。
+    try:
+        return tile_label(tile)
+    except (ValueError, TypeError):
+        return str(tile)
+
+
 def _format_human_text(payload: dict[str, Any]) -> str:
-    recommended = payload.get("recommended_discard") or "--"
-    alternatives = "、".join(payload.get("alternatives", [])) or "无"
-    hand = " ".join(payload.get("hand", [])) or "未识别"
+    recommended_raw = payload.get("recommended_discard")
+    recommended = _safe_label(recommended_raw) if recommended_raw else "--"
+    alternatives = "、".join(_safe_label(tile) for tile in payload.get("alternatives", [])) or "无"
+    hand = " ".join(_safe_label(tile) for tile in payload.get("hand", [])) or "未识别"
+    drawn_raw = payload.get("drawn_tile")
+    drawn = _safe_label(drawn_raw) if drawn_raw else "无"
     route = "、".join(payload.get("route", [])) or "未判断"
     risks = "、".join(payload.get("risk_notes", [])) or "无"
     return (
         f"建议打：{recommended}\n"
         f"备选：{alternatives}\n"
         f"手牌：{hand}\n"
-        f"摸牌：{payload.get('drawn_tile') or '无'}\n"
-        f"定缺：{payload.get('missing_suit') or '未知'}\n"
+        f"摸牌：{drawn}\n"
+        f"定缺：{suit_label(payload.get('missing_suit'))}\n"
         f"路线：{route}\n"
         f"原因：{payload.get('reason', '')}\n"
         f"风险：{risks}\n"

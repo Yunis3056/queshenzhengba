@@ -3,7 +3,12 @@ from __future__ import annotations
 import unittest
 
 from queshen_agent.models import GameState
-from queshen_agent.strategy import analyze_routes, recommend_discard, recommend_missing_suit
+from queshen_agent.strategy import (
+    _score_discard,
+    analyze_routes,
+    recommend_discard,
+    recommend_missing_suit,
+)
 
 
 class StrategyTest(unittest.TestCase):
@@ -108,6 +113,21 @@ class StrategyTest(unittest.TestCase):
         result = recommend_discard(state)
 
         self.assertTrue(result.route[0].startswith("建议定缺"))
+
+    def test_no_dingque_three_suits_biases_weakest_suit(self) -> None:
+        # P3：未定缺、三门均布时，最弱门(此处万=3张)的牌应额外 +10 想打；
+        # 用「定缺p（关闭P3）」作对照隔离出该加成。
+        tiles = sorted(
+            ["3m", "4m", "5m", "1p", "2p", "3p", "4p", "5p", "1s", "2s", "3s", "4s", "5s"]
+        )
+        state_open = GameState.from_dict({"hand": tiles, "recognition_confidence": 1.0})
+        state_dingque = GameState.from_dict(
+            {"hand": tiles, "missing_suit": "p", "recognition_confidence": 1.0}
+        )
+
+        delta = _score_discard("5m", tiles, state_open) - _score_discard("5m", tiles, state_dingque)
+
+        self.assertEqual(round(delta, 6), 10.0)
 
     def test_visible_tiles_increase_discard_score_for_exhausted_waits(self) -> None:
         base = GameState.from_dict(

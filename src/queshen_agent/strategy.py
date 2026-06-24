@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import Counter
 
-from .models import GameState, RecommendationResult
+from .models import GameState, RecommendationResult, expected_hand_counts
 from .rules import RuleSet
 from .shanten import best_shanten, seven_pairs_shanten, standard_shanten
 from .tile import (
@@ -39,12 +39,13 @@ def recommend_discard(game_state: GameState, rules: RuleSet | None = None) -> Re
             risk_notes=["hand_empty"],
             confidence=0.0,
         )
-    if len(tiles) not in (13, 14):
+    if len(tiles) not in expected_hand_counts(game_state.meld_count):
+        expected_text = "/".join(str(count) for count in expected_hand_counts(game_state.meld_count))
         return RecommendationResult(
             recommended_discard=None,
             alternatives=[],
             route=[],
-            reason=f"当前识别到 {len(tiles)} 张手牌，不是完整的 13/14 张，可能处在出牌动画、胡牌后或截图遮挡中，先等待下一帧。",
+            reason=f"当前识别到 {len(tiles)} 张暗手牌，不是完整的 {expected_text} 张（已计入 {game_state.meld_count} 组副露），可能处在出牌动画、补摸、胡牌后或截图遮挡中，先等待下一帧。",
             risk_notes=["hand_count_unstable"],
             confidence=0.0,
         )
@@ -108,7 +109,7 @@ def recommend_missing_suit(game_state: GameState) -> tuple[str, str] | None:
     if game_state.missing_suit is not None:
         return None
     tiles = sort_tiles(game_state.all_hand_tiles())
-    if len(tiles) not in (13, 14):
+    if len(tiles) not in expected_hand_counts(game_state.meld_count):
         return None
 
     suit_tiles = {suit: [tile for tile in tiles if tile_suit(tile) == suit] for suit in ("m", "p", "s")}
@@ -152,8 +153,9 @@ def analyze_routes(game_state: GameState) -> list[str]:
     if _triplet_like_count(tile_counts) >= 3:
         routes.append("碰碰胡路线")
 
-    standard = standard_shanten(tiles)
-    seven = seven_pairs_shanten(tiles)
+    standard = standard_shanten(tiles, game_state.meld_count)
+    # 有副露时七对路线不适用，用标准型替代以免污染听牌判断。
+    seven = seven_pairs_shanten(tiles) if not game_state.self_melds else standard
     if min(standard, seven) <= 1:
         routes.append("接近听牌")
     elif standard <= 3:
@@ -187,11 +189,14 @@ def _score_discard(tile: str, tiles: list[str], game_state: GameState) -> float:
     counts = counts_by_tile(tiles)
     suit_counts = counts_by_suit(tiles)
     visible = _visible_counts(game_state)
+    melds_done = game_state.meld_count
     score = 0.0
 
     # Lower shanten after discard is better.
-    score += -best_shanten(remaining) * 120
-    score += -standard_shanten(remaining) * 18
+    # 注（P6）：13/等待态手牌没有摸牌，这里算的是"弃一张后"的向听，
+    # 仅作保留价值启发式参考、不等于催打；待打态(14/上限张)才是真正要出的牌。
+    score += -best_shanten(remaining, melds_done) * 120
+    score += -standard_shanten(remaining, melds_done) * 18
     if not game_state.self_melds:
         score += -seven_pairs_shanten(remaining) * 16
 
@@ -237,6 +242,15 @@ def _score_discard(tile: str, tiles: list[str], game_state: GameState) -> float:
             score += 24
         elif dominant_count >= 9 and suit == dominant_suit:
             score -= 14
+
+    # P3：胡牌≤2门花色。未定缺且三门均布的早期，轻微倾向打掉最弱门以主动收敛
+    # （定缺生效后由 +10000 缺门机制接管，这里只补未定缺的早期空窗）。
+    if game_state.missing_suit is None:
+        present_suits = [item for item, value in suit_counts.items() if value > 0]
+        if len(present_suits) >= 3:
+            weakest_suit = min(present_suits, key=lambda item: (suit_counts[item], item))
+            if suit == weakest_suit:
+                score += 10
 
     visible_count = visible[tile]
     if visible_count >= 3:

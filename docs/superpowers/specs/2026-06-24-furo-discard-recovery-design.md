@@ -2,6 +2,10 @@
 
 > 设计文档。生成于 2026-06-24，对应 `docs/code-review-2026-06-24.md` 的 P1。
 > 范围：**最小修复** —— 只恢复副露后的出牌建议，不新增副露专属番型路线。
+>
+> **状态：已实现并验证（2026-06-24）。** 五处根因全部修复；新增 `tests/test_furo.py`（9 例），
+> 全量 `unittest discover` 40 例通过、零回归。改动文件：`models.py` / `shanten.py` /
+> `strategy.py` / `recognition.py`。
 
 ---
 

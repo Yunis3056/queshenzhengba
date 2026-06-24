@@ -10,6 +10,10 @@
 代码整体质量良好（31 个测试全过、向听算法对拍零误差），但存在一个**阻碍实战可用的核心缺陷**：
 **玩家碰/杠（副露）之后，策略完全不再给出出牌建议**。这是本次审查最该优先修复的问题（P1）。
 
+> **更新（2026-06-24）：P1–P7 全部处理完毕。** 全量测试 43 例通过（新增 `tests/test_furo.py`、
+> `tests/test_vision_format.py` 及 strategy 的 P3 用例）。逐项结果见下方各条 ✅ 标注。
+> P1 详细设计见 `docs/superpowers/specs/2026-06-24-furo-discard-recovery-design.md`。
+
 ---
 
 ## 1. 项目背景
@@ -165,3 +169,20 @@ PYTHONPATH=src python -m queshen_agent.cli --missing-suit p --hand 1m 2m 3m 5m 5
 3. P5 ——补注释，几分钟。
 4. P3 / P6 ——体验打磨，可延后。
 5. P7 ——提交前处理。
+
+---
+
+## 8. 处理结果一览（2026-06-24 收尾）
+
+| 项 | 结果 | 改动落点 |
+|---|---|---|
+| P1 副露后失声 | ✅ 已修复 | `models.expected_hand_counts`/`meld_count`、`shanten.melds_done`、`strategy` 张数校验+折算、`recognition` 张数校验 |
+| P2 置信度虚高 | ✅ 已修复 | `recognition.py`：min 纳入低置信(原始)牌 |
+| P3 ≤2 门收敛 | ✅ 已修复 | `strategy._score_discard`：未定缺且三门均布时弱门 +10 |
+| P4 视觉牌面不一致 | ✅ 已修复 | `vision_analyzer._format_human_text`：走 `tile_label`/`suit_label`，非法牌码回退 |
+| P5 七对杠算两对 | ✅ 已补注释 | `shanten.seven_pairs_shanten` |
+| P6 13 张算弃后向听 | ✅ 已补注释 | `strategy._score_discard`：保留价值启发式、有意为之（测试锁定） |
+| P7 git 不可用 | ✅ 已确认可用 | 本会话 `rev-parse/status/log/diff` 均正常，不再复现 |
+
+测试：全量 `PYTHONPATH=src python -m unittest discover -s tests` → 43 例通过。
+新增 `tests/test_furo.py`（副露场景 9 例）、`tests/test_vision_format.py`（P4 2 例）、`test_strategy` P3 1 例。

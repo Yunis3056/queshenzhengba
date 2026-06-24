@@ -6,6 +6,15 @@ from typing import Any
 from .tile import normalize_suit, normalize_tiles
 
 
+def expected_hand_counts(meld_count: int = 0) -> tuple[int, ...]:
+    """副露每组在和牌结构里锁定一个面子，故暗手期望张数随组数每组 -3。
+
+    返回 (等待态, 待打态) = (13 - 3f, 14 - 3f)。recognition 与 strategy 共用，
+    避免张数逻辑在两处漂移。f=0 时退化为 (13, 14)。
+    """
+    return (13 - 3 * meld_count, 14 - 3 * meld_count)
+
+
 @dataclass(slots=True)
 class Region:
     x: int
@@ -192,6 +201,11 @@ class GameState:
         if self.drawn_tile:
             tiles.append(self.drawn_tile)
         return normalize_tiles(tiles)
+
+    @property
+    def meld_count(self) -> int:
+        """已锁定的副露（碰/杠）组数，用于向听折算与暗手张数校验。"""
+        return len(self.self_melds)
 
     def to_dict(self) -> dict[str, Any]:
         return {
