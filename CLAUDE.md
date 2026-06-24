@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A Windows desktop AI coach prototype for the 《燕云十六声》"雀神争霸" (Sichuan-style mahjong) human-vs-AI practice mode. It only offers teaching advice from on-screen pixels — it never reads game memory, never modifies the game, and never auto-clicks. Keep that boundary intact in any change.
+A Windows desktop AI coach prototype for the 《燕云十六声》"雀神争霸" (custom mahjong rules) human-vs-AI practice mode. It only offers teaching advice from on-screen pixels — it never reads game memory, never modifies the game, and never auto-clicks. Keep that boundary intact in any change.
+
+**Important**: This is NOT standard Sichuan mahjong. It's a custom ruleset with unique scoring patterns (yaku). See `outputs/yanyun_queshen_rules.json` for the complete rules.
 
 UI text, recommendation reasons, and most config keys are Chinese-facing; code/identifiers are English.
 
@@ -53,7 +55,7 @@ python tools\quick_capture.py
 
 ## Rules and config
 
-- **Rules** load from `outputs/yanyun_queshen_rules.json` (`rules.py` → `RuleSet`, with `outputs/*.schema.json` alongside). Key invariants baked into strategy/prompts: no chi (吃), peng/gang allowed, dingque (定缺 — a forced missing suit) must be discarded first, winning hand ≤ 2 suits.
+- **Rules** load from `outputs/yanyun_queshen_rules.json` (`rules.py` → `RuleSet`, with `outputs/*.schema.json` alongside). Key invariants: **no chi (吃)**, **peng/gang allowed**, **dingque (定缺 — a forced missing suit)** must be discarded first, **winning hand ≤ 2 suits**. Custom scoring patterns (yaku) include 天胡/地胡 (x32), 将三龙七对 (x128), 十八罗汉 (x64), and many others — see the rules JSON for the complete list.
 - **`config/`** holds runtime JSON, all resolved relative to `PROJECT_ROOT` (see `paths.py`): `regions.json` (live calibration — gitignore-worthy, rewritten by the UI), `regions.example.json` / `regions_1280x720_v2.json` (presets; `apply_1280x720_layout.ps1` → `tools/apply_layout_profile.py` copies a preset into `regions.json`), `quick_capture.json`, `frame_analyzer.json`, `vision_analyzer.json`.
 - **`paths.py`** is the single source of truth for every filesystem location (`PROJECT_ROOT = parents[2]` of the package). Add new paths here rather than hardcoding.
 

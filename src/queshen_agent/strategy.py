@@ -135,16 +135,21 @@ def analyze_routes(game_state: GameState) -> list[str]:
     dominant_suit, dominant_count = suit_counts.most_common(1)[0] if suit_counts else (None, 0)
 
     if not game_state.self_melds and seven_pairs_shanten(tiles) <= 2:
-        if quad_count >= 1:
-            routes.append("龙七对路线")
+        if quad_count >= 3:
+            routes.append("三龙七对路线")  # 三组4张
+        elif quad_count >= 2:
+            routes.append("双龙七对路线")  # 两组4张
+        elif quad_count >= 1:
+            routes.append("龙七对路线")  # 一组4张
         else:
             routes.append("七对路线")
 
+    # 将牌路线（2/5/8）
     if jiang_count >= 9:
         if pair_units >= 5 and not game_state.self_melds:
-            routes.append("将七对路线")
+            routes.append("将七对路线")  # 全是2/5/8的七对
         else:
-            routes.append("将对路线")
+            routes.append("将对路线")  # 全是2/5/8的碰碰胡
 
     if dominant_suit and dominant_count >= 9:
         routes.append(f"清一色路线（{suit_label(dominant_suit)}）")
@@ -277,7 +282,7 @@ def _build_reason(recommended: str, tiles: list[str], game_state: GameState, rou
         dominant = counts_by_suit(tiles).most_common(1)[0][0]
         if tile_suit(recommended) != dominant:
             return f"推荐打{tile_label(recommended)}。当前更像清一色路线，这张不是主花色，先清掉更顺。"
-    if any(route in routes for route in ("七对路线", "龙七对路线", "将七对路线")) and counts[recommended] == 1:
+    if any(route in routes for route in ("七对路线", "龙七对路线", "双龙七对路线", "三龙七对路线", "将七对路线")) and counts[recommended] == 1:
         return f"推荐打{tile_label(recommended)}。对子路线下单张价值低，优先保留对子和四张相同牌。"
     return f"推荐打{tile_label(recommended)}。综合缺门、向听数、搭子价值和番型潜力后，这张牌的保留价值最低。"
 

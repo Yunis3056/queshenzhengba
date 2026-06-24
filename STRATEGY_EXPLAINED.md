@@ -1,5 +1,20 @@
 # 🀄 雀神争霸 AI 策略算法详解
 
+## 重要说明
+
+**本工具适配《燕云十六声》游戏内的自定义规则，不是标准四川麻将。**
+
+核心规则差异：
+- ✅ 可以碰、杠
+- ❌ 不能吃（chi）
+- ✅ 有定缺（缺一门）
+- 📦 牌库只有 3 类：万、筒、条，共 108 张
+- 🎯 胡牌条件：手牌 ≤2 门花色
+
+完整规则见：`outputs/yanyun_queshen_rules.json`
+
+---
+
 ## 一、核心策略：向听数 + 启发式评分
 
 这个 AI 使用的是**经典的麻将 AI 策略**：以**向听数**（Shanten，距离听牌还差几张）为主导，结合多种**启发式规则**来评估每张牌的价值。
@@ -207,7 +222,7 @@ if missing_tiles:
     candidate_scores = {tile: discard_scores[tile] + 10000 for tile in missing_tiles}
 ```
 
-**逻辑**：四川麻将规则，定缺后必须立即打出缺门牌，加 1 万分保证最优先。
+**逻辑**：游戏规则要求，定缺后必须立即打出缺门牌，加 1 万分保证最优先。
 
 ### 4.2 定缺选择算法（`recommend_missing_suit`）
 
@@ -255,17 +270,21 @@ if 手里还有缺门牌:
 
 # 2. 七对子系列
 if seven_pairs_shanten(tiles) <= 2:
-    if quad_count >= 1:
-        routes.append("龙七对路线")  # 四川麻将特有，4 张相同算 2 对
+    if quad_count >= 3:
+        routes.append("三龙七对路线")  # 三组 4 张一样
+    elif quad_count >= 2:
+        routes.append("双龙七对路线")  # 两组 4 张一样
+    elif quad_count >= 1:
+        routes.append("龙七对路线")    # 一组 4 张一样
     else:
         routes.append("七对路线")
 
-# 3. 将对系列
+# 3. 将对系列（2、5、8 是将牌）
 if jiang_count >= 9:  # 2、5、8 合计 9+ 张
     if pair_units >= 5:
-        routes.append("将七对路线")  # 七对 + 将牌
+        routes.append("将七对路线")  # 全是 2/5/8 的七对
     else:
-        routes.append("将对路线")
+        routes.append("将对路线")    # 全是 2/5/8 的碰碰胡
 
 # 4. 清一色
 if dominant_count >= 9:  # 某花色 9+ 张

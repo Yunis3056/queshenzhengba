@@ -1,11 +1,13 @@
 # 🀄 雀神争霸 AI 教练
 
-专为《燕云十六声》"雀神争霸"（四川麻将）设计的桌面 AI 辅助工具。
+专为《燕云十六声》"雀神争霸"（自定义规则麻将）设计的桌面 AI 辅助工具。
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/Yunis3056/queshenzhengba/releases/tag/v1.0.0)
 [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://www.python.org/)
 
 **这是一个教学辅助工具，仅提供出牌建议，不会自动操作游戏。**
+
+> **注意**：本工具适配的是《燕云十六声》游戏内的自定义规则，**不是标准四川麻将**。规则详见 `outputs/yanyun_queshen_rules.json`。
 
 ---
 
@@ -77,11 +79,11 @@ python tools\quick_capture.py
 2. **孤张加分**（+18~36 分）- 孤立边张优先打
 3. **对子/刻子惩罚**（-25~-42 分）- 保留价值高
 4. **幺九牌加分**（+8~16 分）- 边张进张面窄
-5. **七对/将对路线调整**
+5. **七对/龙七对/将对路线调整**
 6. **清一色路线调整**
 7. **可见牌数量**（+6~12 分）
 8. **等待牌死张检测**（+4~10 分）
-9. **定缺强制打**（+10000 分）- 四川麻将规则
+9. **定缺强制打**（+10000 分）- 游戏规则要求
 
 详见：[STRATEGY_EXPLAINED.md](STRATEGY_EXPLAINED.md)
 
