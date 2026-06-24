@@ -215,6 +215,94 @@ class RoundedButton(tk.Canvas):
             self.command()
 
 
+class TileCard(tk.Canvas):
+    """自绘麻将牌控件——牙白圆角卡片+金边+大号牌字，展示「建议打」。"""
+
+    def __init__(self, parent: tk.Widget, *, width: int = 96, height: int = 116) -> None:
+        self.parent_bg = parent.cget("bg") if hasattr(parent, "cget") else T["bg_dark"]
+        self._tile_text = "--"
+        self._is_empty = True
+        super().__init__(
+            parent, width=width, height=height,
+            bg=self.parent_bg, bd=0, highlightthickness=0,
+        )
+        self.bind("<Configure>", lambda _e: self._draw())
+        self._draw()
+
+    def config(self, **kwargs) -> None:  # type: ignore[override]
+        text = kwargs.pop("text", None)
+        if text is not None:
+            self._tile_text = str(text)
+            self._is_empty = (str(text) == "--")
+        if kwargs:
+            super().config(**kwargs)
+        self._draw()
+
+    configure = config
+
+    def _draw(self) -> None:
+        self.delete("all")
+        w = max(1, self.winfo_width())
+        h = max(1, self.winfo_height())
+        r = 12
+        fill   = T["bg_card"] if not self._is_empty else T["bg_dark"]
+        border = T["gold"]    if not self._is_empty else T["btn_border"]
+        self.create_polygon(
+            _round_rect_points(2, 2, w - 2, h - 2, r),
+            smooth=True, fill=fill, outline=border, width=2,
+        )
+        if not self._is_empty:
+            # 内侧细装饰框
+            self.create_polygon(
+                _round_rect_points(7, 7, w - 7, h - 7, r - 3),
+                smooth=True, fill="", outline=T["gold"], width=1,
+            )
+        font_size = 32 if len(self._tile_text) <= 2 else 22
+        fg = T["red"] if not self._is_empty else T["text_dim"]
+        self.create_text(
+            w // 2, h // 2, text=self._tile_text, fill=fg,
+            font=("Microsoft YaHei UI", font_size, "bold"), anchor="center",
+        )
+
+
+class ConfBar(tk.Canvas):
+    """Canvas 自绘置信度条（金色填充）。"""
+
+    def __init__(self, parent: tk.Widget, *, width: int = 180, height: int = 14) -> None:
+        self.parent_bg = parent.cget("bg") if hasattr(parent, "cget") else T["bg_dark"]
+        self._value = 0.0
+        super().__init__(
+            parent, width=width, height=height,
+            bg=self.parent_bg, bd=0, highlightthickness=0,
+        )
+        self.bind("<Configure>", lambda _e: self._draw())
+        self._draw()
+
+    def set_value(self, v: float) -> None:
+        self._value = max(0.0, min(1.0, v))
+        self._draw()
+
+    def _draw(self) -> None:
+        self.delete("all")
+        w = max(1, self.winfo_width())
+        h = max(1, self.winfo_height())
+        r = h // 2
+        self.create_polygon(
+            _round_rect_points(0, 0, w, h, r),
+            smooth=True, fill=T["bg"], outline=T["btn_border"],
+        )
+        fill_w = max(0, int((w - 2) * self._value))
+        if fill_w > 0:
+            self.create_polygon(
+                _round_rect_points(1, 1, fill_w, h - 1, r - 1),
+                smooth=True, fill=T["gold_hi"], outline="",
+            )
+        pct = f"{int(self._value * 100)}%"
+        fg  = T["text_card"] if self._value > 0.5 else T["text_main"]
+        self.create_text(w // 2, h // 2, text=pct, fill=fg,
+                         font=("Microsoft YaHei UI", 8, "bold"))
+
+
 class RoundedEntry(tk.Frame):
     def __init__(self, parent: tk.Widget, *, width: int = 92) -> None:
         self.parent_bg = parent.cget("bg") if hasattr(parent, "cget") else T["bg"]
@@ -334,59 +422,83 @@ class QuickCaptureApp:
             font=("Microsoft YaHei UI", 12, "bold"),
         ).grid(row=8, column=0, columnspan=4, sticky="w", pady=(8, 6))
 
-        # ── 推荐牌卡(牙白) ──
-        card = tk.Frame(outer, bg=T["bg_card"], highlightthickness=1, highlightbackground=T["gold"])
-        card.grid(row=9, column=0, columnspan=4, sticky="nsew", pady=(0, 2))
-        card.grid_columnconfigure(1, weight=1)
-        self.result_fields: dict[str, tk.Label] = {}
+        # ── 主结果面板（深绿底圆角感）──
+        panel = tk.Frame(outer, bg=T["bg_dark"], padx=14, pady=14)
+        panel.grid(row=9, column=0, columnspan=4, sticky="nsew")
+        panel.grid_columnconfigure(1, weight=1)
+        self.result_fields: dict[str, tk.Label | TileCard | ConfBar] = {}
 
-        self._add_result_row(card, 0, "建议打", "recommended", "--",
-                             value_font=("Microsoft YaHei UI", 26, "bold"), value_fg=T["red"])
-        self._add_result_row(card, 1, "备选",   "alternatives", "--")
-        self._add_result_row(card, 2, "定缺",   "missing",      "未识别")
-        self._add_result_row(card, 3, "路线",   "route",        "未判断",   wraplength=390)
-        self._add_result_row(card, 4, "原因",   "reason",       "等待截帧...", wraplength=390)
-        self._add_result_row(card, 5, "风险",   "risk",         "无",       wraplength=390)
-        self._add_result_row(card, 6, "置信度", "confidence",   "--")
+        # 左：大麻将牌卡
+        self.tile_display = TileCard(panel, width=96, height=116)
+        self.tile_display.grid(row=0, column=0, rowspan=4, padx=(0, 16), pady=(0, 4), sticky="n")
+        self.result_fields["recommended"] = self.tile_display
+
+        lbl_font   = ("Microsoft YaHei UI", 10)
+        label_cfg  = dict(fg=T["text_dim"], bg=T["bg_dark"], font=lbl_font, anchor="w")
+        value_cfg  = dict(bg=T["bg_dark"], font=lbl_font, anchor="w", justify="left")
+
+        # 右上：备选
+        tk.Label(panel, text="备选", **label_cfg).grid(
+            row=0, column=1, sticky="w", pady=(0, 2))
+        alt_lbl = tk.Label(panel, text="--", fg=T["text_main"], **{k: v for k, v in value_cfg.items() if k != "fg"})
+        alt_lbl.grid(row=0, column=2, sticky="w", pady=(0, 2), padx=(4, 0))
+        self.result_fields["alternatives"] = alt_lbl
+
+        # 右：定缺
+        tk.Label(panel, text="定缺", **label_cfg).grid(row=1, column=1, sticky="w", pady=2)
+        miss_lbl = tk.Label(panel, text="未识别", fg=T["gold"], **{k: v for k, v in value_cfg.items() if k != "fg"})
+        miss_lbl.grid(row=1, column=2, sticky="w", pady=2, padx=(4, 0))
+        self.result_fields["missing"] = miss_lbl
+
+        # 右：置信度条
+        tk.Label(panel, text="置信度", **label_cfg).grid(row=2, column=1, sticky="w", pady=2)
+        self.conf_bar = ConfBar(panel, width=160, height=14)
+        self.conf_bar.grid(row=2, column=2, sticky="w", pady=2, padx=(4, 0))
+        self.result_fields["confidence"] = self.conf_bar  # type: ignore[assignment]
+
+        # 右：路线
+        tk.Label(panel, text="路线", **label_cfg).grid(row=3, column=1, sticky="nw", pady=2)
+        route_lbl = tk.Label(panel, text="未判断", fg=T["text_main"],
+                              wraplength=240, **{k: v for k, v in value_cfg.items() if k != "fg"})
+        route_lbl.grid(row=3, column=2, sticky="w", pady=2, padx=(4, 0))
+        self.result_fields["route"] = route_lbl
+
+        # 全宽：原因框
+        reason_frame = tk.Frame(panel, bg=T["bg"], padx=10, pady=8)
+        reason_frame.grid(row=4, column=0, columnspan=3, sticky="ew", pady=(10, 4))
+        reason_lbl = tk.Label(
+            reason_frame, text="等待截帧...",
+            fg=T["text_main"], bg=T["bg"],
+            font=("Microsoft YaHei UI", 10),
+            justify="left", anchor="w", wraplength=400,
+        )
+        reason_lbl.pack(fill="x", anchor="w")
+        self.result_fields["reason"] = reason_lbl
+
+        # 风险（小字，仅有内容时显眼）
+        risk_lbl = tk.Label(
+            panel, text="", fg="#E57373", bg=T["bg_dark"],
+            font=("Microsoft YaHei UI", 9), justify="left", anchor="w", wraplength=400,
+        )
+        risk_lbl.grid(row=5, column=0, columnspan=3, sticky="w", pady=(0, 4))
+        self.result_fields["risk"] = risk_lbl
 
         # ── 手牌格 ──
-        tk.Label(card, text="手牌", fg=T["text_card_dim"], bg=T["bg_card"],
-                 font=("Microsoft YaHei UI", 10, "bold")).grid(
-            row=7, column=0, sticky="nw", padx=(12, 8), pady=(10, 4)
-        )
-        hand_grid = tk.Frame(card, bg=T["bg_card"])
-        hand_grid.grid(row=7, column=1, sticky="ew", padx=(0, 12), pady=(8, 12))
+        hand_sep = tk.Frame(panel, bg=T["btn_border"], height=1)
+        hand_sep.grid(row=6, column=0, columnspan=3, sticky="ew", pady=(4, 8))
+
+        hand_grid = tk.Frame(panel, bg=T["bg_dark"])
+        hand_grid.grid(row=7, column=0, columnspan=3, sticky="ew", pady=(0, 2))
         self.hand_cells: list[tk.Label] = []
         for i in range(14):
             cell = tk.Label(
                 hand_grid, text=str(i + 1), width=4, height=2,
                 fg=T["text_dim"], bg=T["tile_empty"],
                 font=("Microsoft YaHei UI", 10, "bold"),
+                relief="flat", bd=0,
             )
-            cell.grid(row=i // 7, column=i % 7, padx=2, pady=2, sticky="nsew")
+            cell.grid(row=i // 7, column=i % 7, padx=3, pady=3, sticky="nsew")
             self.hand_cells.append(cell)
-
-    def _add_result_row(
-        self, parent, row, title, key, value, *,
-        value_font=("Microsoft YaHei UI", 10),
-        value_fg: str = "",
-        wraplength: int = 0,
-    ) -> None:
-        if not value_fg:
-            value_fg = T["text_card"]
-        tk.Label(
-            parent, text=title, fg=T["text_card_dim"], bg=T["bg_card"],
-            font=("Microsoft YaHei UI", 10, "bold"),
-        ).grid(row=row, column=0, sticky="nw",
-               padx=(12, 8), pady=(10 if row == 0 else 4, 4))
-        lbl = tk.Label(
-            parent, text=value, fg=value_fg, bg=T["bg_card"],
-            font=value_font, justify="left", anchor="w",
-            wraplength=wraplength,
-        )
-        lbl.grid(row=row, column=1, sticky="ew",
-                 padx=(0, 12), pady=(10 if row == 0 else 4, 4))
-        self.result_fields[key] = lbl
 
     def _button(self, parent, text, command, primary=False) -> RoundedButton:
         return RoundedButton(parent, text, command, primary=primary)
@@ -553,25 +665,25 @@ class QuickCaptureApp:
         alternatives = "、".join(tile_label(t) for t in recommendation.alternatives) or "无"
         missing      = suit_label(state.missing_suit) if state.missing_suit else "未识别"
         route        = "、".join(recommendation.route) or "未判断"
-        risk         = "、".join(recommendation.risk_notes) or "无"
-        confidence   = f"识别 {state.recognition_confidence:.0%} / 建议 {recommendation.confidence:.0%}"
-        self.result_fields["recommended"].config(text=recommended)
+        risk         = "、".join(recommendation.risk_notes)
+        conf         = max(state.recognition_confidence, recommendation.confidence)
+        self.tile_display.config(text=recommended)
         self.result_fields["alternatives"].config(text=alternatives)
         self.result_fields["missing"].config(text=missing)
+        self.conf_bar.set_value(conf)
         self.result_fields["route"].config(text=route)
         self.result_fields["reason"].config(text=recommendation.reason)
-        self.result_fields["risk"].config(text=risk)
-        self.result_fields["confidence"].config(text=confidence)
+        self.result_fields["risk"].config(text=f"⚠ {risk}" if risk else "")
         self._render_hand_cells(state)
 
     def _set_result_message(self, text: str) -> None:
-        self.result_fields["recommended"].config(text="--")
+        self.tile_display.config(text="--")
         self.result_fields["alternatives"].config(text="--")
         self.result_fields["missing"].config(text="未识别")
+        self.conf_bar.set_value(0.0)
         self.result_fields["route"].config(text="未判断")
         self.result_fields["reason"].config(text=text)
-        self.result_fields["risk"].config(text="无")
-        self.result_fields["confidence"].config(text="--")
+        self.result_fields["risk"].config(text="")
         self._render_hand_cells(None)
 
     def _render_hand_cells(self, state) -> None:
