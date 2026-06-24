@@ -6,11 +6,10 @@
 
 ## 功能
 
-- 桌面框选游戏区域
-- 一键截图
-- 校准手牌、弃牌、碰杠、定缺区域
+- 桌面框选截图区域（手机投屏到电脑也适用）
+- 每隔 X 秒自动连续截帧，实时分析
 - 本地模板识别 `1m-9m`、`1p-9p`、`1s-9s`
-- 基于雀神争霸规则推荐出牌
+- 基于雀神争霸规则推荐出牌，窗口内直接显示「实时建议」
 - 保存截图、识别结果和建议，方便复盘
 - 手动输入兜底，可在没有模板时测试策略引擎
 
@@ -20,25 +19,18 @@
 python -m pip install -r requirements.txt
 ```
 
-## 启动桌面版
+## 启动
 
-推荐：
+主程序是一体化的截图分析窗口（截图 + 实时建议同一个窗口）：
 
 ```powershell
-.\start_queshen_agent.ps1
+.\start_quick_capture.ps1
 ```
 
 或直接：
 
 ```powershell
-python -m src.queshen_agent.app
-```
-
-如果你习惯设置 `PYTHONPATH`：
-
-```powershell
-$env:PYTHONPATH="src"
-python -m queshen_agent.app
+python tools\quick_capture.py
 ```
 
 ## 命令行测试

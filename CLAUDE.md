@@ -13,7 +13,7 @@ UI text, recommendation reasons, and most config keys are Chinese-facing; code/i
 The package lives under `src/`, so the import root is `src` (`pyproject.toml` sets `pythonpath = ["src"]` for pytest). Either set `PYTHONPATH=src` or use the `run_*.py` wrappers / `.ps1` launchers (the wrappers prepend `src` to `sys.path`; the `.ps1` files prefer `.\.venv\Scripts\python.exe` and force UTF-8).
 
 ```powershell
-python -m pip install -r requirements.txt          # PySide6, opencv-python, mss, Pillow, numpy
+python -m pip install -r requirements.txt          # opencv-python, mss, Pillow, numpy
 
 # Tests (no extra env when using PYTHONPATH)
 $env:PYTHONPATH="src"; python -m unittest discover -s tests
@@ -26,12 +26,16 @@ $env:PYTHONPATH="src"; python -m queshen_agent.cli --missing-suit p --hand 1m 2m
 
 There is no build step and no linter configured.
 
-## Two run modes (both advice-only)
+## Run mode
 
-1. **Full desktop overlay** — `python -m src.queshen_agent.app` (or `start_queshen_agent.ps1`). `app.py` → `ui.py` (PySide6). Used to calibrate regions and do one-shot screenshot→advice.
-2. **Lightweight capture + analyzer** — `tools/quick_capture.py` (tkinter, `start_quick_capture.ps1`) grabs the screen into `watch/`, and `watch_analyzer.py` (`start_watch_analyzer.ps1` / `start_frame_analyzer.ps1`) polls and analyzes. This mode suits phone-mirror-to-PC setups. `tools/quick_capture.py` deliberately imports private helpers (`_write_latest_result`, `_is_file_stable`, etc.) from `watch_analyzer` — that module is the de facto shared analysis library, not just a CLI.
+**`tools/quick_capture.py`** (tkinter, `start_quick_capture.ps1`) is the single entry point — it grabs the screen into `watch/frames/latest.png` every X seconds, runs the analysis pipeline in-process, and shows the result in the same window. Suits phone-mirror-to-PC setups. `tools/quick_capture.py` deliberately imports private helpers (`_write_latest_result`, `_is_file_stable`, etc.) from `watch_analyzer` — that module is the de facto shared analysis library, not just a CLI.
 
-`watch_analyzer` has two watch loops: `watch()` (a directory inbox, history kept) and `watch_latest_frame()` (continuous capture, only `watch/frames/latest.png`, overwrites `watch/results/latest_result.{json,txt}` and skips stale frames unless `keep_result_history` is set).
+```powershell
+.\start_quick_capture.ps1   # recommended (sets UTF-8, prefers .venv)
+python tools\quick_capture.py
+```
+
+`watch_analyzer` has two watch loops: `watch()` (a directory inbox, history kept) and `watch_latest_frame()` (continuous capture, only `watch/frames/latest.png`, overwrites `watch/results/latest_result.{json,txt}` and skips stale frames unless `keep_result_history` is set). The standalone analyzers (`start_watch_analyzer.ps1` / `start_frame_analyzer.ps1`) are for headless/server use when the capture and analysis run on different machines.
 
 ## Core pipeline
 
