@@ -22,16 +22,20 @@ def _require_qt():
             QComboBox,
             QDialog,
             QFrame,
+            QGraphicsDropShadowEffect,
             QGridLayout,
             QHBoxLayout,
             QLabel,
             QLineEdit,
             QMainWindow,
             QMessageBox,
+            QProgressBar,
             QPushButton,
             QPlainTextEdit,
+            QSizePolicy,
             QTabWidget,
             QTextEdit,
+            QToolButton,
             QVBoxLayout,
             QWidget,
         )
@@ -52,16 +56,20 @@ def _require_qt():
         "QComboBox": QComboBox,
         "QDialog": QDialog,
         "QFrame": QFrame,
+        "QGraphicsDropShadowEffect": QGraphicsDropShadowEffect,
         "QGridLayout": QGridLayout,
         "QHBoxLayout": QHBoxLayout,
         "QLabel": QLabel,
         "QLineEdit": QLineEdit,
         "QMainWindow": QMainWindow,
         "QMessageBox": QMessageBox,
+        "QProgressBar": QProgressBar,
         "QPushButton": QPushButton,
         "QPlainTextEdit": QPlainTextEdit,
+        "QSizePolicy": QSizePolicy,
         "QTabWidget": QTabWidget,
         "QTextEdit": QTextEdit,
+        "QToolButton": QToolButton,
         "QVBoxLayout": QVBoxLayout,
         "QWidget": QWidget,
     }
@@ -75,6 +83,40 @@ def run_app() -> int:
     window = CoachWindow(qt)
     window.show()
     return app.exec()
+
+
+def _make_collapsible(qt: dict[str, object], title: str, content, expanded: bool = False):
+    """轻量折叠分组：QToolButton 头部(▸/▾) 控制 content 显隐。"""
+    QWidget = qt["QWidget"]
+    QVBoxLayout = qt["QVBoxLayout"]
+    QToolButton = qt["QToolButton"]
+    QSizePolicy = qt["QSizePolicy"]
+
+    container = QWidget()
+    container.setObjectName("Section")
+    box = QVBoxLayout(container)
+    box.setContentsMargins(0, 0, 0, 0)
+    box.setSpacing(0)
+
+    header = QToolButton()
+    header.setObjectName("SectionHeader")
+    header.setCheckable(True)
+    header.setChecked(expanded)
+    header.setText(("▾  " if expanded else "▸  ") + title)
+    header.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+    header.setCursor(qt["Qt"].CursorShape.PointingHandCursor)
+
+    content.setVisible(expanded)
+
+    def _on_toggled(checked: bool) -> None:
+        content.setVisible(checked)
+        header.setText(("▾  " if checked else "▸  ") + title)
+
+    header.toggled.connect(_on_toggled)
+
+    box.addWidget(header)
+    box.addWidget(content)
+    return container
 
 
 class RegionPicker:
@@ -180,85 +222,141 @@ class CoachWindow:
                 self._update_status("准备就绪")
 
             def _build_ui(self) -> None:
+                AlignFlag = Qt.AlignmentFlag
                 root = QWidget()
+                root.setObjectName("Root")
                 layout = QVBoxLayout(root)
-                layout.setContentsMargins(16, 16, 16, 16)
-                layout.setSpacing(12)
+                layout.setContentsMargins(18, 16, 18, 16)
+                layout.setSpacing(14)
 
+                # 顶部栏：标题 + 状态徽标
                 header = QHBoxLayout()
-                title = QLabel("雀神争霸 AI 教练")
+                title = QLabel("雀神争霸 · AI 教练")
                 title.setObjectName("Title")
                 self.status_label = QLabel("")
                 self.status_label.setObjectName("Status")
+                self.status_label.setAlignment(AlignFlag.AlignRight | AlignFlag.AlignVCenter)
                 header.addWidget(title)
                 header.addStretch()
                 header.addWidget(self.status_label)
                 layout.addLayout(header)
 
-                self.recommend_label = QLabel("建议打：--")
-                self.recommend_label.setObjectName("Recommend")
-                layout.addWidget(self.recommend_label)
+                # 推荐牌卡：牙白麻将牌主视觉
+                tile_card = QFrame()
+                tile_card.setObjectName("TileCard")
+                tile_box = QVBoxLayout(tile_card)
+                tile_box.setContentsMargins(20, 14, 20, 16)
+                tile_box.setSpacing(4)
+                caption = QLabel("建议打出")
+                caption.setObjectName("TileCaption")
+                caption.setAlignment(AlignFlag.AlignHCenter)
+                self.recommend_label = QLabel("--")
+                self.recommend_label.setObjectName("TileFace")
+                self.recommend_label.setAlignment(AlignFlag.AlignCenter)
+                self.alt_label = QLabel("备选：无")
+                self.alt_label.setObjectName("TileAlt")
+                self.alt_label.setAlignment(AlignFlag.AlignCenter)
+                tile_box.addWidget(caption)
+                tile_box.addWidget(self.recommend_label)
+                tile_box.addWidget(self.alt_label)
+                shadow = qt["QGraphicsDropShadowEffect"]()
+                shadow.setBlurRadius(26)
+                shadow.setColor(qt["QColor"](0, 0, 0, 170))
+                shadow.setOffset(0, 5)
+                tile_card.setGraphicsEffect(shadow)
+                layout.addWidget(tile_card)
 
+                # 置信度进度条
+                conf_row = QHBoxLayout()
+                conf_caption = QLabel("置信度")
+                conf_caption.setObjectName("FieldLabel")
+                self.confidence_bar = qt["QProgressBar"]()
+                self.confidence_bar.setRange(0, 100)
+                self.confidence_bar.setValue(0)
+                self.confidence_bar.setFormat("%p%")
+                conf_row.addWidget(conf_caption)
+                conf_row.addWidget(self.confidence_bar, 1)
+                layout.addLayout(conf_row)
+
+                # 理由卡
                 self.reason_label = QLabel("先选择游戏区域并校准牌区。")
                 self.reason_label.setWordWrap(True)
                 self.reason_label.setObjectName("Reason")
                 layout.addWidget(self.reason_label)
 
-                controls = QGridLayout()
-                controls.setSpacing(8)
-                buttons = [
+                # 主操作：截图识别（强调）
+                self.capture_button = QPushButton("一键截图识别")
+                self.capture_button.setObjectName("Primary")
+                self.capture_button.clicked.connect(self.capture_and_analyze)
+                layout.addWidget(self.capture_button)
+
+                sub_row = QHBoxLayout()
+                save_button = QPushButton("保存样本")
+                save_button.clicked.connect(self.save_latest_record)
+                collapse_button = QPushButton("折叠 / 展开窗口")
+                collapse_button.clicked.connect(self.toggle_compact)
+                sub_row.addWidget(save_button)
+                sub_row.addWidget(collapse_button)
+                layout.addLayout(sub_row)
+
+                # 折叠分组：区域校准（默认展开）
+                calib_content = QWidget()
+                calib_grid = QGridLayout(calib_content)
+                calib_grid.setContentsMargins(8, 8, 8, 10)
+                calib_grid.setSpacing(8)
+                calib_buttons = [
                     ("选择游戏区域", self.pick_game_area),
                     ("校准手牌区", lambda: self.pick_region("hand")),
                     ("校准待打牌", lambda: self.pick_region("drawn_tile")),
                     ("校准自己碰杠", lambda: self.pick_region("self_melds")),
                     ("校准倒计时", lambda: self.pick_region("turn_timer")),
-                    ("一键截图识别", self.capture_and_analyze),
                     ("初始化模板目录", self.init_templates),
                 ]
-                for index, (text, handler) in enumerate(buttons):
+                for index, (text, handler) in enumerate(calib_buttons):
                     button = QPushButton(text)
                     button.clicked.connect(handler)
-                    controls.addWidget(button, index // 2, index % 2)
-                layout.addLayout(controls)
+                    calib_grid.addWidget(button, index // 2, index % 2)
+                layout.addWidget(_make_collapsible(qt, "区域校准", calib_content, expanded=True))
 
-                opponent_box = QFrame()
-                opponent_box.setObjectName("Panel")
-                opponent_layout = QGridLayout(opponent_box)
-                opponent_layout.addWidget(QLabel("对手区域校准"), 0, 0, 1, 3)
+                # 折叠分组：对手区域校准
+                opp_content = QWidget()
+                opp_grid = QGridLayout(opp_content)
+                opp_grid.setContentsMargins(8, 8, 8, 10)
+                opp_grid.setSpacing(8)
+                seat_names = {"left": "左家", "top": "对家", "right": "右家"}
                 for col, seat in enumerate(("left", "top", "right")):
-                    discard_button = QPushButton(f"{seat} 弃牌")
+                    seat_label = QLabel(seat_names[seat])
+                    seat_label.setObjectName("FieldLabel")
+                    seat_label.setAlignment(AlignFlag.AlignCenter)
+                    discard_button = QPushButton("弃牌")
                     discard_button.clicked.connect(lambda checked=False, s=seat: self.pick_region(f"opponent_discards.{s}"))
-                    meld_button = QPushButton(f"{seat} 碰杠")
+                    meld_button = QPushButton("碰杠")
                     meld_button.clicked.connect(lambda checked=False, s=seat: self.pick_region(f"opponent_melds.{s}"))
-                    opponent_layout.addWidget(discard_button, 1, col)
-                    opponent_layout.addWidget(meld_button, 2, col)
-                layout.addWidget(opponent_box)
+                    opp_grid.addWidget(seat_label, 0, col)
+                    opp_grid.addWidget(discard_button, 1, col)
+                    opp_grid.addWidget(meld_button, 2, col)
+                layout.addWidget(_make_collapsible(qt, "对手区域校准", opp_content))
 
-                manual = QFrame()
-                manual.setObjectName("Panel")
-                manual_layout = QGridLayout(manual)
-                manual_layout.addWidget(QLabel("手动兜底输入"), 0, 0, 1, 2)
+                # 折叠分组：手动兜底输入
+                manual_content = QWidget()
+                manual_grid = QGridLayout(manual_content)
+                manual_grid.setContentsMargins(8, 8, 8, 10)
+                manual_grid.setSpacing(8)
                 self.manual_missing = QComboBox()
                 self.manual_missing.addItems(["未知", "万", "筒", "条"])
                 self.manual_hand = QLineEdit()
                 self.manual_hand.setPlaceholderText("例如：1m 2m 3m 5p 5p 8s")
                 manual_button = QPushButton("用手动牌面分析")
                 manual_button.clicked.connect(self.analyze_manual)
-                manual_layout.addWidget(QLabel("定缺"), 1, 0)
-                manual_layout.addWidget(self.manual_missing, 1, 1)
-                manual_layout.addWidget(self.manual_hand, 2, 0, 1, 2)
-                manual_layout.addWidget(manual_button, 3, 0, 1, 2)
-                layout.addWidget(manual)
+                dingque_label = QLabel("定缺")
+                dingque_label.setObjectName("FieldLabel")
+                manual_grid.addWidget(dingque_label, 0, 0)
+                manual_grid.addWidget(self.manual_missing, 0, 1)
+                manual_grid.addWidget(self.manual_hand, 1, 0, 1, 2)
+                manual_grid.addWidget(manual_button, 2, 0, 1, 2)
+                layout.addWidget(_make_collapsible(qt, "手动兜底输入", manual_content))
 
-                record_row = QHBoxLayout()
-                save_button = QPushButton("保存样本")
-                save_button.clicked.connect(self.save_latest_record)
-                collapse_button = QPushButton("折叠/展开")
-                collapse_button.clicked.connect(self.toggle_compact)
-                record_row.addWidget(save_button)
-                record_row.addWidget(collapse_button)
-                layout.addLayout(record_row)
-
+                # 底部 Tab：路线 / 识别详情
                 tabs = QTabWidget()
                 self.route_text = QTextEdit()
                 self.route_text.setReadOnly(True)
@@ -274,71 +372,152 @@ class CoachWindow:
             def _apply_style(self) -> None:
                 self.setStyleSheet(
                     """
-                    QMainWindow, QWidget {
-                        background: #111318;
-                        color: #F4F1E8;
-                        font-family: "Microsoft YaHei UI", "Segoe UI";
+                    QMainWindow { background: #0C1F18; }
+                    QWidget#Root {
+                        background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                            stop:0 #15392B, stop:0.55 #102A20, stop:1 #0B1C15);
+                    }
+                    QWidget {
+                        color: #EEF2EA;
+                        font-family: "Microsoft YaHei UI", "Segoe UI", "PingFang SC";
                         font-size: 14px;
                     }
                     QLabel#Title {
-                        font-size: 20px;
+                        font-size: 21px;
+                        font-weight: 800;
+                        color: #F2C572;
+                        letter-spacing: 1px;
+                    }
+                    QLabel#Status { color: #9DB3A5; font-size: 12px; }
+                    QLabel#FieldLabel { color: #B8C8BC; font-size: 13px; }
+
+                    QFrame#TileCard {
+                        background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                            stop:0 #FAF7EE, stop:1 #ECE6D4);
+                        border: 1px solid #C9A45C;
+                        border-radius: 14px;
+                    }
+                    QLabel#TileCaption {
+                        color: #8A7A4E;
+                        font-size: 12px;
+                        font-weight: 600;
+                        letter-spacing: 6px;
+                    }
+                    QLabel#TileFace {
+                        color: #16302A;
+                        font-size: 54px;
+                        font-weight: 900;
+                    }
+                    QLabel#TileAlt { color: #6E7A66; font-size: 13px; }
+
+                    QLabel#Reason {
+                        color: #DCE6DD;
+                        padding: 12px 14px;
+                        background: rgba(20, 48, 36, 0.65);
+                        border: 1px solid #2F5A47;
+                        border-radius: 10px;
+                    }
+
+                    QToolButton#SectionHeader {
+                        text-align: left;
+                        padding: 9px 12px;
+                        color: #F2C572;
+                        font-size: 14px;
+                        font-weight: 700;
+                        background: rgba(20, 48, 36, 0.7);
+                        border: 1px solid #2F5A47;
+                        border-radius: 10px;
+                    }
+                    QToolButton#SectionHeader:hover { border-color: #C9A45C; }
+
+                    QPushButton {
+                        background: #1C4434;
+                        border: 1px solid #356A51;
+                        border-radius: 9px;
+                        padding: 8px 12px;
+                        color: #EAF2EB;
+                    }
+                    QPushButton:hover { background: #235140; border-color: #C9A45C; }
+                    QPushButton:pressed { background: #163528; }
+                    QPushButton#Primary {
+                        background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                            stop:0 #F2C572, stop:1 #D9A748);
+                        border: 1px solid #C9A45C;
+                        color: #1A2C16;
+                        font-size: 16px;
+                        font-weight: 800;
+                        padding: 12px;
+                    }
+                    QPushButton#Primary:hover {
+                        background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                            stop:0 #F7D08A, stop:1 #E6B860);
+                    }
+                    QPushButton#Primary:pressed {
+                        background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                            stop:0 #D9A748, stop:1 #C99A3E);
+                    }
+
+                    QLineEdit, QComboBox, QTextEdit, QPlainTextEdit {
+                        background: rgba(11, 28, 21, 0.8);
+                        border: 1px solid #2F5A47;
+                        border-radius: 9px;
+                        color: #EEF2EA;
+                        padding: 6px 8px;
+                        selection-background-color: #C9A45C;
+                        selection-color: #16302A;
+                    }
+                    QLineEdit:focus, QComboBox:focus { border-color: #F2C572; }
+                    QComboBox::drop-down { border: none; width: 22px; }
+                    QComboBox QAbstractItemView {
+                        background: #102A20;
+                        border: 1px solid #2F5A47;
+                        selection-background-color: #1C4434;
+                        color: #EEF2EA;
+                    }
+
+                    QProgressBar {
+                        background: rgba(11, 28, 21, 0.8);
+                        border: 1px solid #2F5A47;
+                        border-radius: 8px;
+                        min-height: 16px;
+                        text-align: center;
+                        color: #16302A;
+                        font-size: 11px;
                         font-weight: 700;
                     }
-                    QLabel#Status {
-                        color: #8EA0B8;
-                        font-size: 12px;
+                    QProgressBar::chunk {
+                        background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                            stop:0 #D9A748, stop:1 #F2C572);
+                        border-radius: 7px;
                     }
-                    QLabel#Recommend {
-                        color: #F2C572;
-                        font-size: 30px;
-                        font-weight: 800;
-                        padding: 14px 16px;
-                        background: #1B1F27;
-                        border: 1px solid #2A303A;
-                        border-radius: 8px;
-                    }
-                    QLabel#Reason {
-                        color: #D8DEE9;
-                        line-height: 1.5;
-                        padding: 12px;
-                        background: #171B22;
-                        border: 1px solid #2A303A;
-                        border-radius: 8px;
-                    }
-                    QFrame#Panel {
-                        background: #1B1F27;
-                        border: 1px solid #2A303A;
-                        border-radius: 8px;
-                    }
-                    QPushButton {
-                        background: #252B36;
-                        border: 1px solid #36404F;
-                        border-radius: 8px;
-                        padding: 8px 10px;
-                        color: #F4F1E8;
-                    }
-                    QPushButton:hover {
-                        background: #303849;
-                        border-color: #F2C572;
-                    }
-                    QLineEdit, QComboBox, QTextEdit, QPlainTextEdit, QTabWidget::pane {
-                        background: #171B22;
-                        border: 1px solid #2A303A;
-                        border-radius: 8px;
-                        color: #F4F1E8;
-                        padding: 6px;
+
+                    QTabWidget::pane {
+                        background: rgba(11, 28, 21, 0.8);
+                        border: 1px solid #2F5A47;
+                        border-radius: 10px;
+                        top: -1px;
                     }
                     QTabBar::tab {
-                        background: #1B1F27;
-                        color: #AAB6C6;
-                        padding: 8px 12px;
-                        border-top-left-radius: 8px;
-                        border-top-right-radius: 8px;
+                        background: rgba(20, 48, 36, 0.6);
+                        color: #9DB3A5;
+                        padding: 8px 16px;
+                        border: 1px solid #2F5A47;
+                        border-bottom: none;
+                        border-top-left-radius: 9px;
+                        border-top-right-radius: 9px;
+                        margin-right: 4px;
                     }
-                    QTabBar::tab:selected {
-                        color: #F2C572;
-                        background: #252B36;
+                    QTabBar::tab:selected { color: #F2C572; background: #1C4434; }
+
+                    QScrollBar:vertical {
+                        background: transparent; width: 10px; margin: 2px;
                     }
+                    QScrollBar::handle:vertical {
+                        background: #356A51; border-radius: 5px; min-height: 24px;
+                    }
+                    QScrollBar::handle:vertical:hover { background: #C9A45C; }
+                    QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+                    QMessageBox { background: #102A20; }
                     """
                 )
 
@@ -427,11 +606,11 @@ class CoachWindow:
 
             def _render_result(self, state, result) -> None:
                 tile_text = tile_label(result.recommended_discard) if result.recommended_discard else "--"
-                self.recommend_label.setText(f"建议打：{tile_text}")
+                self.recommend_label.setText(tile_text)
                 alternatives = "、".join(tile_label(tile) for tile in result.alternatives) or "无"
-                self.reason_label.setText(
-                    f"{result.reason}\n备选：{alternatives} · 置信度：{result.confidence:.0%}"
-                )
+                self.alt_label.setText(f"备选：{alternatives}")
+                self.confidence_bar.setValue(int(round(result.confidence * 100)))
+                self.reason_label.setText(result.reason)
                 self.route_text.setText(
                     "当前路线：\n"
                     + "\n".join(f"• {route}" for route in result.route)
