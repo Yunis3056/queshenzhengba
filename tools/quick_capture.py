@@ -31,6 +31,34 @@ WATCH_INBOX = ROOT / "watch" / "inbox"
 WATCH_FRAMES = ROOT / "watch" / "frames"
 CONFIG_PATH = ROOT / "config" / "quick_capture.json"
 
+# ── 毡台中国风配色 ─────────────────────────────────────────────
+T = {
+    "bg":          "#143226",   # 毡台墨绿主背景
+    "bg_dark":     "#0E2319",   # 稍深底（面板/卡片背景）
+    "bg_card":     "#F5F1E6",   # 牙白牌卡背景
+    "gold":        "#C9A45C",   # 金色（描边/标题）
+    "gold_hi":     "#F2C572",   # 金色高亮（主按钮底色）
+    "gold_press":  "#B8903E",   # 金色按下
+    "red":         "#C0392B",   # 印章红（推荐牌值 / 停止 / X牌）
+    "red_hover":   "#A93226",
+    "red_press":   "#922B21",
+    "btn_bg":      "#1C4434",   # 次按钮底
+    "btn_hover":   "#235140",
+    "btn_press":   "#163528",
+    "btn_border":  "#356A51",   # 次按钮描边
+    "text_main":   "#EFF3EC",   # 主文字（毡绿上）
+    "text_dim":    "#9DB3A5",   # 次要文字
+    "text_card":   "#2C1A0E",   # 牌卡上深色文字
+    "text_card_dim": "#7A6A50", # 牌卡上次要文字
+    "entry_bg":    "#0E2319",   # 输入框背景
+    "entry_border":"#356A51",
+    "entry_focus": "#F2C572",
+    "tile_bg":     "#F7F3E8",   # 手牌格牌面
+    "tile_empty":  "#1C4434",   # 手牌格空位
+    "tile_x_bg":   "#C0392B",   # X牌红底
+}
+# ──────────────────────────────────────────────────────────────
+
 
 def enable_dpi_awareness() -> None:
     if sys.platform != "win32":
@@ -90,45 +118,24 @@ def resolve_project_path(value: str | Path) -> Path:
 def _round_rect_points(x1: int, y1: int, x2: int, y2: int, radius: int) -> list[int]:
     radius = min(radius, (x2 - x1) // 2, (y2 - y1) // 2)
     return [
-        x1 + radius,
-        y1,
-        x2 - radius,
-        y1,
-        x2,
-        y1,
-        x2,
-        y1 + radius,
-        x2,
-        y2 - radius,
-        x2,
-        y2,
-        x2 - radius,
-        y2,
-        x1 + radius,
-        y2,
-        x1,
-        y2,
-        x1,
-        y2 - radius,
-        x1,
-        y1 + radius,
-        x1,
-        y1,
+        x1 + radius, y1,  x2 - radius, y1,
+        x2, y1,  x2, y1 + radius,
+        x2, y2 - radius,  x2, y2,
+        x2 - radius, y2,  x1 + radius, y2,
+        x1, y2,  x1, y2 - radius,
+        x1, y1 + radius,  x1, y1,
     ]
 
 
 class RoundedButton(tk.Canvas):
     def __init__(self, parent: tk.Widget, text: str, command, *, primary: bool = False) -> None:
-        self.parent_bg = parent.cget("bg") if hasattr(parent, "cget") else "#F3F3F3"
+        self.parent_bg = parent.cget("bg") if hasattr(parent, "cget") else T["bg"]
         self.command = command
         self.text = text
-        self.fg = "#FFFFFF" if primary else "#202020"
-        self.base_color = "#0067C0" if primary else "#FFFFFF"
-        self.hover_color = "#005A9E" if primary else "#F8F8F8"
-        self.press_color = "#004A83" if primary else "#EFEFEF"
-        self.border_color = "#0067C0" if primary else "#D0D0D0"
+        self._primary = primary
         self._pressed = False
         self._hovered = False
+        self._apply_scheme(primary, base_override=None)
         super().__init__(
             parent,
             width=132,
@@ -138,140 +145,206 @@ class RoundedButton(tk.Canvas):
             highlightthickness=0,
             cursor="hand2",
         )
-        self.bind("<Configure>", lambda _event: self._draw())
+        self.bind("<Configure>", lambda _e: self._draw())
         self.bind("<Enter>", self._on_enter)
         self.bind("<Leave>", self._on_leave)
         self.bind("<ButtonPress-1>", self._on_press)
         self.bind("<ButtonRelease-1>", self._on_release)
         self._draw()
 
+    def _apply_scheme(self, primary: bool, base_override: str | None) -> None:
+        if base_override == T["red"]:
+            self.fg = "#FFFFFF"
+            self.base_color  = T["red"]
+            self.hover_color = T["red_hover"]
+            self.press_color = T["red_press"]
+            self.border_color = T["red"]
+        elif primary:
+            self.fg = T["text_card"]
+            self.base_color  = T["gold_hi"]
+            self.hover_color = "#F7D08A"
+            self.press_color = T["gold_press"]
+            self.border_color = T["gold"]
+        else:
+            self.fg = T["text_main"]
+            self.base_color  = T["btn_bg"]
+            self.hover_color = T["btn_hover"]
+            self.press_color = T["btn_press"]
+            self.border_color = T["btn_border"]
+
     def config(self, **kwargs) -> None:  # type: ignore[override]
         text = kwargs.pop("text", None)
-        bg = kwargs.pop("bg", None)
-        fg = kwargs.pop("fg", None)
+        bg   = kwargs.pop("bg", None)
+        fg   = kwargs.pop("fg", None)
         command = kwargs.pop("command", None)
+        if text    is not None: self.text = str(text)
+        if command is not None: self.command = command
+        if fg      is not None: self.fg = str(fg)
+        if bg      is not None:
+            self._apply_scheme(self._primary, bg if bg in (T["red"],) else None)
+            if bg not in (T["red"],):
+                self.base_color = bg
+        if kwargs: super().config(**kwargs)
+        self._draw()
+
+    configure = config
+
+    def _draw(self) -> None:
+        self.delete("all")
+        w = max(1, self.winfo_width())
+        h = max(1, self.winfo_height())
+        color = self.press_color if self._pressed else self.hover_color if self._hovered else self.base_color
+        self.create_polygon(
+            _round_rect_points(1, 1, w - 1, h - 1, 9),
+            smooth=True, fill=color, outline=self.border_color,
+        )
+        self.create_text(
+            w // 2, h // 2,
+            text=self.text, fill=self.fg,
+            font=("Microsoft YaHei UI", 10, "bold"),
+        )
+
+    def _on_enter(self, _e):  self._hovered = True;  self._draw()
+    def _on_leave(self, _e):  self._hovered = False; self._pressed = False; self._draw()
+    def _on_press(self, _e):  self._pressed = True;  self._draw()
+
+    def _on_release(self, event):
+        was = self._pressed
+        self._pressed = False; self._draw()
+        if was and 0 <= event.x <= self.winfo_width() and 0 <= event.y <= self.winfo_height():
+            self.command()
+
+
+class TileCard(tk.Canvas):
+    """自绘麻将牌控件——牙白圆角卡片+金边+大号牌字，展示「建议打」。"""
+
+    def __init__(self, parent: tk.Widget, *, width: int = 96, height: int = 116) -> None:
+        self.parent_bg = parent.cget("bg") if hasattr(parent, "cget") else T["bg_dark"]
+        self._tile_text = "--"
+        self._is_empty = True
+        super().__init__(
+            parent, width=width, height=height,
+            bg=self.parent_bg, bd=0, highlightthickness=0,
+        )
+        self.bind("<Configure>", lambda _e: self._draw())
+        self._draw()
+
+    def config(self, **kwargs) -> None:  # type: ignore[override]
+        text = kwargs.pop("text", None)
         if text is not None:
-            self.text = str(text)
-        if command is not None:
-            self.command = command
-        if fg is not None:
-            self.fg = str(fg)
-        if bg is not None:
-            self._set_base_color(str(bg))
+            self._tile_text = str(text)
+            self._is_empty = (str(text) == "--")
         if kwargs:
             super().config(**kwargs)
         self._draw()
 
     configure = config
 
-    def _set_base_color(self, color: str) -> None:
-        self.base_color = color
-        if color.upper() == "#C42B1C":
-            self.hover_color = "#A4262C"
-            self.press_color = "#8E1F22"
-            self.border_color = "#C42B1C"
-        elif color.upper() == "#0067C0":
-            self.hover_color = "#005A9E"
-            self.press_color = "#004A83"
-            self.border_color = "#0067C0"
-        else:
-            self.hover_color = "#F8F8F8"
-            self.press_color = "#EFEFEF"
-            self.border_color = "#D0D0D0"
+    def _draw(self) -> None:
+        self.delete("all")
+        w = max(1, self.winfo_width())
+        h = max(1, self.winfo_height())
+        r = 12
+        fill   = T["bg_card"] if not self._is_empty else T["bg_dark"]
+        border = T["gold"]    if not self._is_empty else T["btn_border"]
+        self.create_polygon(
+            _round_rect_points(2, 2, w - 2, h - 2, r),
+            smooth=True, fill=fill, outline=border, width=2,
+        )
+        if not self._is_empty:
+            # 内侧细装饰框
+            self.create_polygon(
+                _round_rect_points(7, 7, w - 7, h - 7, r - 3),
+                smooth=True, fill="", outline=T["gold"], width=1,
+            )
+        font_size = 32 if len(self._tile_text) <= 2 else 22
+        fg = T["red"] if not self._is_empty else T["text_dim"]
+        self.create_text(
+            w // 2, h // 2, text=self._tile_text, fill=fg,
+            font=("Microsoft YaHei UI", font_size, "bold"), anchor="center",
+        )
+
+
+class ConfBar(tk.Canvas):
+    """Canvas 自绘置信度条（金色填充）。"""
+
+    def __init__(self, parent: tk.Widget, *, width: int = 180, height: int = 14) -> None:
+        self.parent_bg = parent.cget("bg") if hasattr(parent, "cget") else T["bg_dark"]
+        self._value = 0.0
+        super().__init__(
+            parent, width=width, height=height,
+            bg=self.parent_bg, bd=0, highlightthickness=0,
+        )
+        self.bind("<Configure>", lambda _e: self._draw())
+        self._draw()
+
+    def set_value(self, v: float) -> None:
+        self._value = max(0.0, min(1.0, v))
+        self._draw()
 
     def _draw(self) -> None:
         self.delete("all")
-        width = max(1, self.winfo_width())
-        height = max(1, self.winfo_height())
-        color = self.press_color if self._pressed else self.hover_color if self._hovered else self.base_color
+        w = max(1, self.winfo_width())
+        h = max(1, self.winfo_height())
+        r = h // 2
         self.create_polygon(
-            _round_rect_points(1, 1, width - 1, height - 1, 8),
-            smooth=True,
-            fill=color,
-            outline=self.border_color,
+            _round_rect_points(0, 0, w, h, r),
+            smooth=True, fill=T["bg"], outline=T["btn_border"],
         )
-        self.create_text(
-            width // 2,
-            height // 2,
-            text=self.text,
-            fill=self.fg,
-            font=("Microsoft YaHei UI", 10, "bold"),
-        )
-
-    def _on_enter(self, _event: tk.Event) -> None:
-        self._hovered = True
-        self._draw()
-
-    def _on_leave(self, _event: tk.Event) -> None:
-        self._hovered = False
-        self._pressed = False
-        self._draw()
-
-    def _on_press(self, _event: tk.Event) -> None:
-        self._pressed = True
-        self._draw()
-
-    def _on_release(self, event: tk.Event) -> None:
-        was_pressed = self._pressed
-        self._pressed = False
-        self._draw()
-        if was_pressed and 0 <= event.x <= self.winfo_width() and 0 <= event.y <= self.winfo_height():
-            self.command()
+        fill_w = max(0, int((w - 2) * self._value))
+        if fill_w > 0:
+            self.create_polygon(
+                _round_rect_points(1, 1, fill_w, h - 1, r - 1),
+                smooth=True, fill=T["gold_hi"], outline="",
+            )
+        pct = f"{int(self._value * 100)}%"
+        fg  = T["text_card"] if self._value > 0.5 else T["text_main"]
+        self.create_text(w // 2, h // 2, text=pct, fill=fg,
+                         font=("Microsoft YaHei UI", 8, "bold"))
 
 
 class RoundedEntry(tk.Frame):
     def __init__(self, parent: tk.Widget, *, width: int = 92) -> None:
-        self.parent_bg = parent.cget("bg") if hasattr(parent, "cget") else "#F3F3F3"
+        self.parent_bg = parent.cget("bg") if hasattr(parent, "cget") else T["bg"]
         super().__init__(parent, width=width, height=34, bg=self.parent_bg)
         self.grid_propagate(False)
         self.canvas = tk.Canvas(self, bg=self.parent_bg, bd=0, highlightthickness=0)
         self.canvas.place(x=0, y=0, relwidth=1, relheight=1)
         self.entry = tk.Entry(
-            self,
-            relief="flat",
-            bg="#FFFFFF",
-            fg="#202020",
-            insertbackground="#202020",
-            bd=0,
-            font=("Microsoft YaHei UI", 10),
+            self, relief="flat",
+            bg=T["entry_bg"], fg=T["text_main"],
+            insertbackground=T["gold_hi"],
+            bd=0, font=("Microsoft YaHei UI", 10),
         )
         self.entry.place(x=10, y=6, relwidth=1, width=-20, height=22)
-        self._border_color = "#D0D0D0"
-        self.bind("<Configure>", lambda _event: self._draw())
-        self.canvas.bind("<Button-1>", lambda _event: self.entry.focus_set())
-        self.entry.bind("<FocusIn>", lambda _event: self._set_border("#0067C0"))
-        self.entry.bind("<FocusOut>", lambda _event: self._set_border("#D0D0D0"))
+        self._border_color = T["entry_border"]
+        self.bind("<Configure>", lambda _e: self._draw())
+        self.canvas.bind("<Button-1>", lambda _e: self.entry.focus_set())
+        self.entry.bind("<FocusIn>",  lambda _e: self._set_border(T["entry_focus"]))
+        self.entry.bind("<FocusOut>", lambda _e: self._set_border(T["entry_border"]))
         self._draw()
 
-    def insert(self, index, text: str) -> None:
-        self.entry.insert(index, text)
-
-    def delete(self, first, last=None) -> None:
-        self.entry.delete(first, last)
-
-    def get(self) -> str:
-        return self.entry.get()
+    def insert(self, index, text: str) -> None: self.entry.insert(index, text)
+    def delete(self, first, last=None) -> None:  self.entry.delete(first, last)
+    def get(self) -> str: return self.entry.get()
 
     def _set_border(self, color: str) -> None:
-        self._border_color = color
-        self._draw()
+        self._border_color = color; self._draw()
 
     def _draw(self) -> None:
         self.canvas.delete("all")
-        width = max(1, self.winfo_width())
-        height = max(1, self.winfo_height())
+        w = max(1, self.winfo_width())
+        h = max(1, self.winfo_height())
         self.canvas.create_polygon(
-            _round_rect_points(1, 1, width - 1, height - 1, 8),
-            smooth=True,
-            fill="#FFFFFF",
-            outline=self._border_color,
+            _round_rect_points(1, 1, w - 1, h - 1, 9),
+            smooth=True, fill=T["entry_bg"], outline=self._border_color,
         )
 
 
 class QuickCaptureApp:
     def __init__(self) -> None:
         self.root = tk.Tk()
-        self.root.title("雀神一键截图")
+        self.root.title("雀神争霸 · AI 教练")
         self.root.attributes("-topmost", True)
         self.root.resizable(False, False)
         self.config = load_config()
@@ -292,139 +365,151 @@ class QuickCaptureApp:
         self.start_embedded_analyzer()
 
     def _build_ui(self) -> None:
-        self.root.configure(bg="#F3F3F3")
-        frame = tk.Frame(self.root, padx=16, pady=16, bg="#F3F3F3")
-        frame.pack(fill="both", expand=True)
+        self.root.configure(bg=T["bg"])
+        outer = tk.Frame(self.root, bg=T["bg"], padx=18, pady=16)
+        outer.pack(fill="both", expand=True)
 
-        title = tk.Label(frame, text="雀神争霸教练", fg="#202020", bg="#F3F3F3", font=("Microsoft YaHei UI", 16, "bold"))
-        title.grid(row=0, column=0, columnspan=4, sticky="w", pady=(0, 8))
+        # ── 标题栏 ──
+        title = tk.Label(
+            outer, text="雀神争霸 · AI 教练",
+            fg=T["gold_hi"], bg=T["bg"],
+            font=("Microsoft YaHei UI", 17, "bold"),
+        )
+        title.grid(row=0, column=0, columnspan=4, sticky="w", pady=(0, 12))
 
+        # ── 截图区域参数 ──
+        field_font = ("Microsoft YaHei UI", 10)
         self.entries: dict[str, RoundedEntry] = {}
         for row, key in enumerate(("x", "y", "width", "height"), start=1):
-            label = tk.Label(frame, text=key, fg="#424242", bg="#F3F3F3")
-            label.grid(row=row, column=0, sticky="w", pady=4)
-            entry = RoundedEntry(frame)
+            tk.Label(outer, text=key, fg=T["text_dim"], bg=T["bg"], font=field_font).grid(
+                row=row, column=0, sticky="w", pady=3
+            )
+            entry = RoundedEntry(outer)
             entry.insert(0, str(getattr(self.config, key)))
-            entry.grid(row=row, column=1, sticky="w", pady=4)
+            entry.grid(row=row, column=1, sticky="w", pady=3)
             self.entries[key] = entry
 
-        interval_label = tk.Label(frame, text="截帧间隔", fg="#424242", bg="#F3F3F3")
-        interval_label.grid(row=5, column=0, sticky="w", pady=(10, 4))
-        self.interval_entry = RoundedEntry(frame)
+        tk.Label(outer, text="截帧间隔(秒)", fg=T["text_dim"], bg=T["bg"], font=field_font).grid(
+            row=5, column=0, sticky="w", pady=(10, 3)
+        )
+        self.interval_entry = RoundedEntry(outer)
         self.interval_entry.insert(0, str(self.config.frame_interval_seconds))
-        self.interval_entry.grid(row=5, column=1, sticky="w", pady=(10, 4))
+        self.interval_entry.grid(row=5, column=1, sticky="w", pady=(10, 3))
 
-        capture = self._button(frame, "一键截图", self.capture, primary=True)
-        capture.grid(row=1, column=2, rowspan=2, padx=(16, 0), pady=4, sticky="nsew")
+        # ── 右侧按钮列 ──
+        capture_btn = self._button(outer, "一键截图", self.capture, primary=True)
+        capture_btn.grid(row=1, column=2, rowspan=2, padx=(16, 0), pady=3, sticky="nsew")
 
-        save = self._button(frame, "保存区域", self.save_region)
-        save.grid(row=3, column=2, rowspan=2, padx=(16, 0), pady=4, sticky="nsew")
+        save_btn = self._button(outer, "保存区域", self.save_region)
+        save_btn.grid(row=3, column=2, rowspan=2, padx=(16, 0), pady=3, sticky="nsew")
 
-        select = self._button(frame, "手动选区", self.select_region)
-        select.grid(row=1, column=3, rowspan=4, padx=(10, 0), pady=4, sticky="nsew")
+        select_btn = self._button(outer, "手动选区", self.select_region)
+        select_btn.grid(row=1, column=3, rowspan=4, padx=(10, 0), pady=3, sticky="nsew")
 
-        self.frame_button = self._button(frame, "开始连续截帧", self.toggle_continuous_frames)
-        self.frame_button.grid(row=5, column=2, columnspan=2, padx=(16, 0), pady=(10, 4), sticky="nsew")
+        self.frame_button = self._button(outer, "▶  开始连续截帧", self.toggle_continuous_frames, primary=True)
+        self.frame_button.grid(row=5, column=2, columnspan=2, padx=(16, 0), pady=(10, 3), sticky="nsew")
 
-        self.new_round_button = self._button(frame, "新开一局", self.start_new_round, primary=True)
-        self.new_round_button.grid(row=6, column=2, columnspan=2, padx=(16, 0), pady=(8, 4), sticky="nsew")
+        self.new_round_button = self._button(outer, "新开一局", self.start_new_round)
+        self.new_round_button.grid(row=6, column=2, columnspan=2, padx=(16, 0), pady=(6, 3), sticky="nsew")
 
-        result_title = tk.Label(
-            frame,
-            text="实时建议",
-            fg="#202020",
-            bg="#F3F3F3",
+        # ── 分隔线 ──
+        sep = tk.Frame(outer, bg=T["gold"], height=1)
+        sep.grid(row=7, column=0, columnspan=4, sticky="ew", pady=(14, 0))
+
+        # ── 实时建议标题 ──
+        tk.Label(
+            outer, text="实时建议", fg=T["gold"], bg=T["bg"],
             font=("Microsoft YaHei UI", 12, "bold"),
-        )
-        result_title.grid(row=7, column=0, columnspan=4, sticky="w", pady=(12, 4))
+        ).grid(row=8, column=0, columnspan=4, sticky="w", pady=(8, 6))
 
-        result_panel = tk.Frame(frame, bg="#FFFFFF", highlightthickness=1, highlightbackground="#D0D0D0")
-        result_panel.grid(row=8, column=0, columnspan=4, sticky="nsew")
-        result_panel.grid_columnconfigure(1, weight=1)
-        self.result_fields: dict[str, tk.Label] = {}
-        self._add_result_row(
-            result_panel,
-            0,
-            "建议打",
-            "recommended",
-            "--",
-            value_font=("Microsoft YaHei UI", 20, "bold"),
-            value_fg="#C42B1C",
-        )
-        self._add_result_row(result_panel, 1, "备选", "alternatives", "--")
-        self._add_result_row(result_panel, 2, "定缺", "missing", "未识别")
-        self._add_result_row(result_panel, 3, "路线", "route", "未判断", wraplength=390)
-        self._add_result_row(result_panel, 4, "原因", "reason", "等待连续帧...", wraplength=390)
-        self._add_result_row(result_panel, 5, "风险", "risk", "无", wraplength=390)
-        self._add_result_row(result_panel, 6, "置信度", "confidence", "--")
+        # ── 主结果面板（深绿底圆角感）──
+        panel = tk.Frame(outer, bg=T["bg_dark"], padx=14, pady=14)
+        panel.grid(row=9, column=0, columnspan=4, sticky="nsew")
+        panel.grid_columnconfigure(1, weight=1)
+        self.result_fields: dict[str, tk.Label | TileCard | ConfBar] = {}
 
-        hand_title = tk.Label(
-            result_panel,
-            text="手牌",
-            fg="#424242",
-            bg="#FFFFFF",
-            font=("Microsoft YaHei UI", 10, "bold"),
+        # 左：大麻将牌卡
+        self.tile_display = TileCard(panel, width=96, height=116)
+        self.tile_display.grid(row=0, column=0, rowspan=4, padx=(0, 16), pady=(0, 4), sticky="n")
+        self.result_fields["recommended"] = self.tile_display
+
+        lbl_font   = ("Microsoft YaHei UI", 10)
+        label_cfg  = dict(fg=T["text_dim"], bg=T["bg_dark"], font=lbl_font, anchor="w")
+        value_cfg  = dict(bg=T["bg_dark"], font=lbl_font, anchor="w", justify="left")
+
+        # 右上：备选
+        tk.Label(panel, text="备选", **label_cfg).grid(
+            row=0, column=1, sticky="w", pady=(0, 2))
+        alt_lbl = tk.Label(panel, text="--", fg=T["text_main"], **{k: v for k, v in value_cfg.items() if k != "fg"})
+        alt_lbl.grid(row=0, column=2, sticky="w", pady=(0, 2), padx=(4, 0))
+        self.result_fields["alternatives"] = alt_lbl
+
+        # 右：定缺
+        tk.Label(panel, text="定缺", **label_cfg).grid(row=1, column=1, sticky="w", pady=2)
+        miss_lbl = tk.Label(panel, text="未识别", fg=T["gold"], **{k: v for k, v in value_cfg.items() if k != "fg"})
+        miss_lbl.grid(row=1, column=2, sticky="w", pady=2, padx=(4, 0))
+        self.result_fields["missing"] = miss_lbl
+
+        # 右：置信度条
+        tk.Label(panel, text="置信度", **label_cfg).grid(row=2, column=1, sticky="w", pady=2)
+        self.conf_bar = ConfBar(panel, width=160, height=14)
+        self.conf_bar.grid(row=2, column=2, sticky="w", pady=2, padx=(4, 0))
+        self.result_fields["confidence"] = self.conf_bar  # type: ignore[assignment]
+
+        # 右：路线
+        tk.Label(panel, text="路线", **label_cfg).grid(row=3, column=1, sticky="nw", pady=2)
+        route_lbl = tk.Label(panel, text="未判断", fg=T["text_main"],
+                              wraplength=240, **{k: v for k, v in value_cfg.items() if k != "fg"})
+        route_lbl.grid(row=3, column=2, sticky="w", pady=2, padx=(4, 0))
+        self.result_fields["route"] = route_lbl
+
+        # 全宽：原因框
+        reason_frame = tk.Frame(panel, bg=T["bg"], padx=10, pady=8)
+        reason_frame.grid(row=4, column=0, columnspan=3, sticky="ew", pady=(10, 4))
+        reason_lbl = tk.Label(
+            reason_frame, text="等待截帧...",
+            fg=T["text_main"], bg=T["bg"],
+            font=("Microsoft YaHei UI", 10),
+            justify="left", anchor="w", wraplength=400,
         )
-        hand_title.grid(row=7, column=0, sticky="nw", padx=(12, 8), pady=(10, 4))
-        hand_grid = tk.Frame(result_panel, bg="#FFFFFF")
-        hand_grid.grid(row=7, column=1, sticky="ew", padx=(0, 12), pady=(8, 12))
+        reason_lbl.pack(fill="x", anchor="w")
+        self.result_fields["reason"] = reason_lbl
+
+        # 风险（小字，仅有内容时显眼）
+        risk_lbl = tk.Label(
+            panel, text="", fg="#E57373", bg=T["bg_dark"],
+            font=("Microsoft YaHei UI", 9), justify="left", anchor="w", wraplength=400,
+        )
+        risk_lbl.grid(row=5, column=0, columnspan=3, sticky="w", pady=(0, 4))
+        self.result_fields["risk"] = risk_lbl
+
+        # ── 手牌格 ──
+        hand_sep = tk.Frame(panel, bg=T["btn_border"], height=1)
+        hand_sep.grid(row=6, column=0, columnspan=3, sticky="ew", pady=(4, 8))
+
+        hand_grid = tk.Frame(panel, bg=T["bg_dark"])
+        hand_grid.grid(row=7, column=0, columnspan=3, sticky="ew", pady=(0, 2))
         self.hand_cells: list[tk.Label] = []
-        for index in range(14):
+        for i in range(14):
             cell = tk.Label(
-                hand_grid,
-                text=str(index + 1),
-                width=4,
-                height=2,
-                fg="#8A8A8A",
-                bg="#F7F7F7",
-                relief="solid",
-                bd=1,
+                hand_grid, text=str(i + 1), width=4, height=2,
+                fg=T["text_dim"], bg=T["tile_empty"],
                 font=("Microsoft YaHei UI", 10, "bold"),
+                relief="flat", bd=0,
             )
-            cell.grid(row=index // 7, column=index % 7, padx=2, pady=2, sticky="nsew")
+            cell.grid(row=i // 7, column=i % 7, padx=3, pady=3, sticky="nsew")
             self.hand_cells.append(cell)
 
-    def _add_result_row(
-        self,
-        parent: tk.Widget,
-        row: int,
-        title: str,
-        key: str,
-        value: str,
-        *,
-        value_font: tuple[str, int, str] | tuple[str, int] = ("Microsoft YaHei UI", 10),
-        value_fg: str = "#202020",
-        wraplength: int = 0,
-    ) -> None:
-        label = tk.Label(
-            parent,
-            text=title,
-            fg="#424242",
-            bg="#FFFFFF",
-            font=("Microsoft YaHei UI", 10, "bold"),
-        )
-        label.grid(row=row, column=0, sticky="nw", padx=(12, 8), pady=(8 if row == 0 else 4, 4))
-        value_label = tk.Label(
-            parent,
-            text=value,
-            fg=value_fg,
-            bg="#FFFFFF",
-            font=value_font,
-            justify="left",
-            anchor="w",
-            wraplength=wraplength,
-        )
-        value_label.grid(row=row, column=1, sticky="ew", padx=(0, 12), pady=(8 if row == 0 else 4, 4))
-        self.result_fields[key] = value_label
-
-    def _button(self, parent: tk.Widget, text: str, command, primary: bool = False) -> RoundedButton:
+    def _button(self, parent, text, command, primary=False) -> RoundedButton:
         return RoundedButton(parent, text, command, primary=primary)
+
+    # ── 以下逻辑方法完全不变 ────────────────────────────────────
 
     def save_region(self) -> None:
         try:
             self.config.x = int(self.entries["x"].get())
             self.config.y = int(self.entries["y"].get())
-            self.config.width = int(self.entries["width"].get())
+            self.config.width  = int(self.entries["width"].get())
             self.config.height = int(self.entries["height"].get())
             self.config.frame_interval_seconds = float(self.interval_entry.get())
             if self.config.frame_interval_seconds <= 0:
@@ -443,7 +528,6 @@ class QuickCaptureApp:
         except Exception as exc:
             messagebox.showerror("截图失败", str(exc))
             return
-
         output_dir = resolve_project_path(self.config.output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
@@ -463,7 +547,7 @@ class QuickCaptureApp:
         if not self.round_active or self.current_round_dir is None:
             self._create_round_dir()
         self.frame_running = True
-        self.frame_button.config(text="停止连续截帧", bg="#C42B1C", fg="#FFFFFF")
+        self.frame_button.config(text="■  停止连续截帧", bg=T["red"])
         self._capture_frame_loop()
 
     def stop_continuous_frames(self) -> None:
@@ -472,7 +556,7 @@ class QuickCaptureApp:
             self.root.after_cancel(self.frame_after_id)
             self.frame_after_id = None
         self.round_active = False
-        self.frame_button.config(text="开始连续截帧", bg="#FFFFFF", fg="#202020")
+        self.frame_button.config(text="▶  开始连续截帧", bg=T["gold_hi"])
 
     def _capture_frame_loop(self) -> None:
         if not self.frame_running:
@@ -498,7 +582,6 @@ class QuickCaptureApp:
         tmp_path = latest_path.with_name(f"{latest_path.stem}.tmp{latest_path.suffix}")
         image.save(tmp_path)
         tmp_path.replace(latest_path)
-
         history_dir = self._active_history_dir()
         self.last_saved_frame_path = None
         if history_dir is not None:
@@ -561,7 +644,6 @@ class QuickCaptureApp:
         ):
             self._schedule_analyzer_poll()
             return
-
         signature = _file_signature(latest_path)
         if signature is None or signature == self.last_analyzed_signature:
             self._schedule_analyzer_poll()
@@ -579,63 +661,57 @@ class QuickCaptureApp:
         self._schedule_analyzer_poll()
 
     def _render_latest_result(self, state, recommendation) -> None:
-        recommended = tile_label(recommendation.recommended_discard) if recommendation.recommended_discard else "--"
-        alternatives = "、".join(tile_label(tile) for tile in recommendation.alternatives) or "无"
-        missing = suit_label(state.missing_suit) if state.missing_suit else "未识别"
-        route = "、".join(recommendation.route) or "未判断"
-        risk = "、".join(recommendation.risk_notes) or "无"
-        confidence = f"识别 {state.recognition_confidence:.0%} / 建议 {recommendation.confidence:.0%}"
-        self.result_fields["recommended"].config(text=recommended)
+        recommended  = tile_label(recommendation.recommended_discard) if recommendation.recommended_discard else "--"
+        alternatives = "、".join(tile_label(t) for t in recommendation.alternatives) or "无"
+        missing      = suit_label(state.missing_suit) if state.missing_suit else "未识别"
+        route        = "、".join(recommendation.route) or "未判断"
+        risk         = "、".join(recommendation.risk_notes)
+        conf         = max(state.recognition_confidence, recommendation.confidence)
+        self.tile_display.config(text=recommended)
         self.result_fields["alternatives"].config(text=alternatives)
         self.result_fields["missing"].config(text=missing)
+        self.conf_bar.set_value(conf)
         self.result_fields["route"].config(text=route)
         self.result_fields["reason"].config(text=recommendation.reason)
-        self.result_fields["risk"].config(text=risk)
-        self.result_fields["confidence"].config(text=confidence)
+        self.result_fields["risk"].config(text=f"⚠ {risk}" if risk else "")
         self._render_hand_cells(state)
 
     def _set_result_message(self, text: str) -> None:
-        self.result_fields["recommended"].config(text="--")
+        self.tile_display.config(text="--")
         self.result_fields["alternatives"].config(text="--")
         self.result_fields["missing"].config(text="未识别")
+        self.conf_bar.set_value(0.0)
         self.result_fields["route"].config(text="未判断")
         self.result_fields["reason"].config(text=text)
-        self.result_fields["risk"].config(text="无")
-        self.result_fields["confidence"].config(text="--")
+        self.result_fields["risk"].config(text="")
         self._render_hand_cells(None)
 
     def _render_hand_cells(self, state) -> None:
         display = list(getattr(state, "hand_display", []) or getattr(state, "hand", []) or [])
-        for index, cell in enumerate(self.hand_cells):
-            if index >= len(display):
-                cell.config(text=str(index + 1), fg="#8A8A8A", bg="#F7F7F7")
+        for i, cell in enumerate(self.hand_cells):
+            if i >= len(display):
+                cell.config(text=str(i + 1), fg=T["text_dim"], bg=T["tile_empty"])
                 continue
-            tile = display[index]
+            tile = display[i]
             if tile == "X":
-                cell.config(text="X", fg="#FFFFFF", bg="#C42B1C")
+                cell.config(text="X", fg="#FFFFFF", bg=T["tile_x_bg"])
             else:
-                cell.config(text=tile_label(tile), fg="#202020", bg="#FFFFFF")
+                cell.config(text=tile_label(tile), fg=T["text_card"], bg=T["tile_bg"])
 
     def _grab_region(self):
         from PIL import ImageGrab
-
-        bbox = (
-            self.config.x,
-            self.config.y,
-            self.config.x + self.config.width,
-            self.config.y + self.config.height,
-        )
+        bbox = (self.config.x, self.config.y,
+                self.config.x + self.config.width, self.config.y + self.config.height)
         return ImageGrab.grab(bbox=bbox)
 
     def _update_screen_scale(self) -> None:
         try:
             from PIL import ImageGrab
-
             grabbed = ImageGrab.grab()
             physical_width, physical_height = grabbed.size
-            logical_width = max(1, self.root.winfo_screenwidth())
+            logical_width  = max(1, self.root.winfo_screenwidth())
             logical_height = max(1, self.root.winfo_screenheight())
-            self.screen_scale_x = physical_width / logical_width
+            self.screen_scale_x = physical_width  / logical_width
             self.screen_scale_y = physical_height / logical_height
         except Exception:
             self.screen_scale_x = 1.0
@@ -644,10 +720,8 @@ class QuickCaptureApp:
     def _logical_to_capture_region(self, region: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
         x, y, width, height = region
         return (
-            round(x * self.screen_scale_x),
-            round(y * self.screen_scale_y),
-            round(width * self.screen_scale_x),
-            round(height * self.screen_scale_y),
+            round(x * self.screen_scale_x), round(y * self.screen_scale_y),
+            round(width * self.screen_scale_x), round(height * self.screen_scale_y),
         )
 
     def _latest_frame_path(self) -> Path:
@@ -703,15 +777,12 @@ class RegionSelector:
         self.window.bind("<ButtonPress-1>", self.on_press)
         self.window.bind("<B1-Motion>", self.on_drag)
         self.window.bind("<ButtonRelease-1>", self.on_release)
-
         self.canvas = tk.Canvas(self.window, bg="black", highlightthickness=0, cursor="crosshair")
         self.canvas.pack(fill="both", expand=True)
         self.canvas.create_text(
-            24,
-            24,
-            anchor="nw",
-            text="拖拽选择游戏区域，松开鼠标确认；按 Esc 取消",
-            fill="#F2C572",
+            24, 24, anchor="nw",
+            text="拖拽选择截图区域，松开确认；按 Esc 取消",
+            fill=T["gold_hi"],
             font=("Microsoft YaHei UI", 18, "bold"),
         )
         self.start_x = 0
@@ -725,30 +796,23 @@ class RegionSelector:
         if self.rect_id is not None:
             self.canvas.delete(self.rect_id)
         self.rect_id = self.canvas.create_rectangle(
-            event.x,
-            event.y,
-            event.x,
-            event.y,
-            outline="#F2C572",
-            width=3,
+            event.x, event.y, event.x, event.y,
+            outline=T["gold_hi"], width=3,
         )
 
     def on_drag(self, event: tk.Event) -> None:
         if self.rect_id is None:
             return
-        start_canvas_x = self.start_x - self.window.winfo_rootx()
-        start_canvas_y = self.start_y - self.window.winfo_rooty()
-        self.canvas.coords(self.rect_id, start_canvas_x, start_canvas_y, event.x, event.y)
+        sx = self.start_x - self.window.winfo_rootx()
+        sy = self.start_y - self.window.winfo_rooty()
+        self.canvas.coords(self.rect_id, sx, sy, event.x, event.y)
 
     def on_release(self, event: tk.Event) -> None:
-        end_x = int(event.x_root)
-        end_y = int(event.y_root)
-        x1, x2 = sorted((self.start_x, end_x))
-        y1, y2 = sorted((self.start_y, end_y))
-        width = x2 - x1
-        height = y2 - y1
-        if width >= 10 and height >= 10:
-            self.region = (x1, y1, width, height)
+        ex, ey = int(event.x_root), int(event.y_root)
+        x1, x2 = sorted((self.start_x, ex))
+        y1, y2 = sorted((self.start_y, ey))
+        if x2 - x1 >= 10 and y2 - y1 >= 10:
+            self.region = (x1, y1, x2 - x1, y2 - y1)
         self.window.destroy()
 
     def cancel(self, event: tk.Event | None = None) -> None:
