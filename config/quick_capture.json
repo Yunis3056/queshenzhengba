@@ -1,0 +1,14 @@
+{
+  "x": 0,
+  "y": 50,
+  "width": 1895,
+  "height": 850,
+  "output_dir": "D:\\code\\project\\queshenzhengba\\watch\\inbox",
+  "frame_dir": "D:\\code\\project\\queshenzhengba\\watch\\frames",
+  "frame_interval_seconds": 2.0,
+  "latest_frame_name": "latest.png",
+  "keep_frame_history": true,
+  "history_dir": "D:\\code\\project\\queshenzhengba\\watch\\frames\\history",
+  "collect_round_frames": false,
+  "round_dir": "D:\\code\\project\\queshenzhengba\\watch\\frames\\rounds"
+}

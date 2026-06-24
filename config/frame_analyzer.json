@@ -1,0 +1,11 @@
+{
+  "latest_frame_path": "watch/frames/latest.png",
+  "results_dir": "watch/results",
+  "poll_seconds": 0.25,
+  "stable_checks": 2,
+  "latest_only": true,
+  "write_latest_result": true,
+  "latest_result_path": "watch/results/latest_result.json",
+  "latest_text_path": "watch/results/latest_result.txt",
+  "keep_result_history": false
+}

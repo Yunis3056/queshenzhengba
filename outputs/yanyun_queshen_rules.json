@@ -1,0 +1,507 @@
+{
+  "$schema": "https://example.local/schemas/yanyun-queshen-rules.schema.json",
+  "schema_version": "1.0.0",
+  "ruleset_id": "yanyun_queshen_zhengba_2026_screenshot",
+  "game_title": "燕云十六声",
+  "mode_title": "雀神争霸",
+  "language": "zh-CN",
+  "source": {
+    "source_type": "in_game_screenshot",
+    "source_description": "用户提供的雀神争霸图文、番型、规则截图整理。",
+    "captured_at": "2026-06",
+    "confidence": "high"
+  },
+  "tile_set": {
+    "suits": [
+      {
+        "id": "wan",
+        "label_zh": "万",
+        "notation": "1m-9m"
+      },
+      {
+        "id": "tong",
+        "label_zh": "筒",
+        "notation": "1p-9p"
+      },
+      {
+        "id": "tiao",
+        "label_zh": "条",
+        "notation": "1s-9s"
+      }
+    ],
+    "ranks": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    "copies_per_tile": 4,
+    "total_tiles": 108,
+    "has_honor_tiles": false,
+    "can_chi": false,
+    "can_peng": true,
+    "can_gang": true
+  },
+  "round_rules": {
+    "dingque": {
+      "enabled": true,
+      "description": "选择一门花色作为缺牌，摸到这门花色的牌一定要打出，对局中不可更改。",
+      "missing_suit_count": 1,
+      "must_discard_missing_suit_when_drawn": true,
+      "can_change_missing_suit_mid_round": false,
+      "winning_hand_max_suit_count": 2
+    },
+    "winning": {
+      "multiple_winners_on_one_discard": true,
+      "round_continues_after_win": true,
+      "round_continues_until": [
+        "three_players_have_won",
+        "wall_is_exhausted"
+      ]
+    },
+    "round_end": {
+      "wall_exhaustion_allowed": true,
+      "refresh_chips_after_round": true
+    },
+    "penalties": [
+      {
+        "id": "not_ready_after_wall_exhausted",
+        "label": "未听牌惩罚",
+        "description": "摸完所有牌时，未听牌的玩家需要额外惩罚。"
+      },
+      {
+        "id": "hua_zhu",
+        "label": "花猪惩罚",
+        "description": "摸完所有牌时，花猪玩家需要额外惩罚。花猪通常指仍持有缺门牌。"
+      }
+    ]
+  },
+  "win_shape_rules": {
+    "standard_hand": {
+      "id": "standard_4_melds_1_pair",
+      "description": "由4个刻子或顺子加1个对子组成的胡牌。",
+      "meld_count": 4,
+      "pair_count": 1
+    },
+    "seven_pairs": {
+      "id": "seven_pairs",
+      "description": "由7个对子组成的胡牌。",
+      "pair_count": 7,
+      "concealed_only": true
+    },
+    "notes": [
+      "截图规则写明可以碰杠，不可以吃。",
+      "胡牌时手牌中不能超过2门花色。",
+      "七对、龙七对、双龙七对、三龙七对均要求不能碰或者杠出。"
+    ]
+  },
+  "scoring_model": {
+    "unit": "multiplier",
+    "composition": "multiplicative",
+    "stacking_policy": "满足多个兼容番型时按倍数叠加；若某番型的 excludes 列表包含另一个番型，则不同时计算被排除番型。"
+  },
+  "fan_patterns": [
+    {
+      "id": "jiang_san_long_qi_dui",
+      "label_zh": "将三龙七对",
+      "multiplier": 128,
+      "category": "huge",
+      "description": "全部是2、5、8组成的三龙七对。",
+      "requirements": {
+        "hand_shape": "seven_pairs",
+        "concealed_only": true,
+        "only_ranks": [2, 5, 8],
+        "pair_count": 7,
+        "quad_group_count": 3
+      },
+      "excludes": [
+        "qi_dui",
+        "jiang_qi_dui",
+        "long_qi_dui",
+        "shuang_long_qi_dui",
+        "jiang_shuang_long_qi_dui",
+        "gen",
+        "duan_yao_jiu"
+      ],
+      "source_text_zh": "全部是2、5、8的组成三龙七对，不计七对、将七对、龙七对、双龙七对、将双龙七对、根、断幺九。",
+      "agent_notes": [
+        "这是截图中最高倍数番型。",
+        "四张相同牌按龙七对结构识别，不额外计根。"
+      ]
+    },
+    {
+      "id": "jiang_shuang_long_qi_dui",
+      "label_zh": "将双龙七对",
+      "multiplier": 64,
+      "category": "huge",
+      "description": "全部是2、5、8组成的双龙七对。",
+      "requirements": {
+        "hand_shape": "seven_pairs",
+        "concealed_only": true,
+        "only_ranks": [2, 5, 8],
+        "pair_count": 7,
+        "quad_group_count": 2
+      },
+      "excludes": [
+        "qi_dui",
+        "jiang_qi_dui",
+        "long_qi_dui",
+        "shuang_long_qi_dui",
+        "gen",
+        "duan_yao_jiu"
+      ],
+      "source_text_zh": "全部是2、5、8的组成双龙七对，不计七对、将七对、龙七对、双龙七对、根、断幺九。",
+      "agent_notes": [
+        "要求七对子结构，不能碰或杠出。"
+      ]
+    },
+    {
+      "id": "shi_ba_luo_han",
+      "label_zh": "十八罗汉",
+      "multiplier": 64,
+      "category": "huge",
+      "description": "金钩钓且有四个杠牌。",
+      "requirements": {
+        "hand_shape": "single_wait_after_melds",
+        "gang_count": 4,
+        "all_other_tiles_are_melded_or_ganged": true,
+        "remaining_hand_tile_count": 1
+      },
+      "excludes": [
+        "gen",
+        "jin_gou_diao",
+        "peng_peng_hu"
+      ],
+      "source_text_zh": "金钩钓且有四个杠牌，不计根、金钩钓和碰碰胡。",
+      "agent_notes": [
+        "必须同时满足金钩钓形态和四杠。"
+      ]
+    },
+    {
+      "id": "tian_hu",
+      "label_zh": "天胡",
+      "multiplier": 32,
+      "category": "huge",
+      "description": "庄家发完牌后立刻胡牌。",
+      "requirements": {
+        "hand_shape": "any",
+        "win_timing": "dealer_initial_hand"
+      },
+      "excludes": [],
+      "source_text_zh": "庄家发完牌后立刻胡牌。",
+      "agent_notes": []
+    },
+    {
+      "id": "di_hu",
+      "label_zh": "地胡",
+      "multiplier": 32,
+      "category": "huge",
+      "description": "非庄家第一轮摸牌就胡牌。",
+      "requirements": {
+        "hand_shape": "any",
+        "win_timing": "non_dealer_first_draw"
+      },
+      "excludes": [],
+      "source_text_zh": "非庄家第一轮摸牌就胡牌。",
+      "agent_notes": []
+    },
+    {
+      "id": "san_long_qi_dui",
+      "label_zh": "三龙七对",
+      "multiplier": 32,
+      "category": "huge",
+      "description": "有7个对子，同时有三组4张一样的牌。",
+      "requirements": {
+        "hand_shape": "seven_pairs",
+        "concealed_only": true,
+        "pair_count": 7,
+        "quad_group_count": 3
+      },
+      "excludes": [
+        "qi_dui",
+        "long_qi_dui",
+        "shuang_long_qi_dui",
+        "gen"
+      ],
+      "source_text_zh": "有7个对子组成，同时有三组4张一样的牌，不能杠或者碰出。不计七对、龙七对、双龙七对、不计1根。",
+      "agent_notes": [
+        "四张一样必须留在手牌中，不能以明杠/暗杠作为七对结构。"
+      ]
+    },
+    {
+      "id": "shuang_long_qi_dui",
+      "label_zh": "双龙七对",
+      "multiplier": 16,
+      "category": "large",
+      "description": "七个对子，且有两组4张一样的牌。",
+      "requirements": {
+        "hand_shape": "seven_pairs",
+        "concealed_only": true,
+        "pair_count": 7,
+        "quad_group_count": 2
+      },
+      "excludes": [
+        "qi_dui",
+        "long_qi_dui",
+        "gen"
+      ],
+      "source_text_zh": "七个对子，且有两组4张一样的牌，不能碰或者杠出。不计七对、龙七对、不计1根。",
+      "agent_notes": []
+    },
+    {
+      "id": "jiang_qi_dui",
+      "label_zh": "将七对",
+      "multiplier": 16,
+      "category": "large",
+      "description": "全部都是2、5、8组成的七对。",
+      "requirements": {
+        "hand_shape": "seven_pairs",
+        "concealed_only": true,
+        "only_ranks": [2, 5, 8],
+        "pair_count": 7
+      },
+      "excludes": [
+        "qi_dui",
+        "duan_yao_jiu"
+      ],
+      "source_text_zh": "全部都是2/5/8组成的七对，不计七对、断幺九。",
+      "agent_notes": [
+        "将牌在本规则中指2、5、8。"
+      ]
+    },
+    {
+      "id": "jiang_dui",
+      "label_zh": "将对",
+      "multiplier": 8,
+      "category": "medium",
+      "description": "手牌全是2、5、8的碰碰胡。",
+      "requirements": {
+        "hand_shape": "standard",
+        "only_ranks": [2, 5, 8],
+        "melds_all_triplets_or_quads": true
+      },
+      "excludes": [
+        "peng_peng_hu"
+      ],
+      "source_text_zh": "手牌全是2/5/8的碰碰胡，不计碰碰胡。",
+      "agent_notes": [
+        "可以有碰杠，因为截图只说手牌全是2/5/8的碰碰胡，未限制必须门清。"
+      ]
+    },
+    {
+      "id": "long_qi_dui",
+      "label_zh": "龙七对",
+      "multiplier": 8,
+      "category": "medium",
+      "description": "七个对子，且有一组4张一样的牌。",
+      "requirements": {
+        "hand_shape": "seven_pairs",
+        "concealed_only": true,
+        "pair_count": 7,
+        "quad_group_count": 1
+      },
+      "excludes": [
+        "qi_dui",
+        "gen"
+      ],
+      "source_text_zh": "七个对子，且有一组4张一样的牌，不能碰或者杠出。不计七对、不计1根。",
+      "agent_notes": []
+    },
+    {
+      "id": "yao_jiu",
+      "label_zh": "幺九",
+      "multiplier": 4,
+      "category": "medium",
+      "description": "胡牌时每个刻子或顺子都包含1、9序数的牌。",
+      "requirements": {
+        "hand_shape": "standard",
+        "each_meld_contains_any_rank": [1, 9]
+      },
+      "excludes": [],
+      "source_text_zh": "胡牌时每个刻子顺子都包含1、9序数的牌。",
+      "agent_notes": [
+        "顺子可为123或789；刻子需为111或999。"
+      ]
+    },
+    {
+      "id": "jin_gou_diao",
+      "label_zh": "金钩钓",
+      "multiplier": 4,
+      "category": "medium",
+      "description": "胡牌时其他牌都被碰、杠，手牌只有一张。",
+      "requirements": {
+        "hand_shape": "single_wait_after_melds",
+        "all_other_tiles_melded": true,
+        "remaining_hand_tile_count": 1
+      },
+      "excludes": [
+        "peng_peng_hu"
+      ],
+      "source_text_zh": "胡牌时其他牌都被碰、杠，手牌只有一张，不计碰碰胡。",
+      "agent_notes": []
+    },
+    {
+      "id": "qi_dui",
+      "label_zh": "七对",
+      "multiplier": 4,
+      "category": "medium",
+      "description": "七个对子也能胡。",
+      "requirements": {
+        "hand_shape": "seven_pairs",
+        "concealed_only": true,
+        "pair_count": 7
+      },
+      "excludes": [],
+      "source_text_zh": "七个对子也能胡。",
+      "agent_notes": []
+    },
+    {
+      "id": "qing_yi_se",
+      "label_zh": "清一色",
+      "multiplier": 4,
+      "category": "medium",
+      "description": "全部由万、筒、条中的某一种花色的牌组成胡牌。",
+      "requirements": {
+        "hand_shape": "any",
+        "allowed_suits": "one_suit"
+      },
+      "excludes": [],
+      "source_text_zh": "全部由万/筒/条中的某一种花色的牌组成胡牌。",
+      "agent_notes": []
+    },
+    {
+      "id": "zi_mo",
+      "label_zh": "自摸",
+      "multiplier": 2,
+      "category": "small",
+      "description": "自摸胡牌。",
+      "requirements": {
+        "hand_shape": "any",
+        "requires_self_draw": true
+      },
+      "excludes": [],
+      "source_text_zh": "自摸胡牌。",
+      "agent_notes": []
+    },
+    {
+      "id": "gen",
+      "label_zh": "根",
+      "multiplier": 2,
+      "category": "small",
+      "description": "手牌中四张一样的是一根，有一根则胡牌时额外x2。",
+      "requirements": {
+        "hand_shape": "any",
+        "quad_group_count": 1
+      },
+      "excludes": [],
+      "source_text_zh": "手牌中四张一样的是一根，有一根则胡牌时额外x2。",
+      "agent_notes": [
+        "每一根可按额外倍率处理；但更高阶七对番型明确排除根时不要重复计。"
+      ]
+    },
+    {
+      "id": "duan_yao_jiu",
+      "label_zh": "断幺九",
+      "multiplier": 2,
+      "category": "small",
+      "description": "胡牌时手牌中没有1或者9序数的牌。",
+      "requirements": {
+        "hand_shape": "any",
+        "forbidden_ranks": [1, 9]
+      },
+      "excludes": [],
+      "source_text_zh": "胡牌时手牌中没有1或者9序数的牌。",
+      "agent_notes": []
+    },
+    {
+      "id": "peng_peng_hu",
+      "label_zh": "碰碰胡",
+      "multiplier": 2,
+      "category": "small",
+      "description": "由4个刻子或者杠牌和将牌组成的胡牌。",
+      "requirements": {
+        "hand_shape": "standard",
+        "melds_all_triplets_or_quads": true
+      },
+      "excludes": [],
+      "source_text_zh": "由4个刻子或者杠牌和将牌组成的胡牌。",
+      "agent_notes": [
+        "这里的将牌按普通麻将语义理解为对子。"
+      ]
+    },
+    {
+      "id": "hai_di_lao_yue",
+      "label_zh": "海底捞月",
+      "multiplier": 2,
+      "category": "small",
+      "description": "摸到牌墙中最后一张牌胡牌。",
+      "requirements": {
+        "hand_shape": "any",
+        "win_timing": "last_wall_tile",
+        "requires_self_draw": true
+      },
+      "excludes": [],
+      "source_text_zh": "摸到牌墙中最后一张牌胡牌。",
+      "agent_notes": []
+    },
+    {
+      "id": "qiang_gang_hu",
+      "label_zh": "抢杠胡",
+      "multiplier": 2,
+      "category": "small",
+      "description": "其他人要杠的牌被你胡了。",
+      "requirements": {
+        "hand_shape": "any",
+        "win_timing": "opponent_gang_tile",
+        "requires_discard_win": true
+      },
+      "excludes": [],
+      "source_text_zh": "其他人要杠的牌被你胡了。",
+      "agent_notes": []
+    },
+    {
+      "id": "gang_shang_kai_hua",
+      "label_zh": "杠上开花",
+      "multiplier": 2,
+      "category": "small",
+      "description": "杠牌后，摸牌就胡牌。",
+      "requirements": {
+        "hand_shape": "any",
+        "win_timing": "after_gang_draw",
+        "requires_self_draw": true
+      },
+      "excludes": [],
+      "source_text_zh": "杠牌后，摸牌就胡牌。",
+      "agent_notes": []
+    },
+    {
+      "id": "ping_hu",
+      "label_zh": "平胡",
+      "multiplier": 1,
+      "category": "small",
+      "description": "由4个刻子或顺子加对子组成的胡牌。",
+      "requirements": {
+        "hand_shape": "standard"
+      },
+      "excludes": [],
+      "source_text_zh": "由4个刻子或顺子加对子组成的胡牌。",
+      "agent_notes": []
+    }
+  ],
+  "agent_guidance": {
+    "decision_priorities": [
+      "先检查是否仍有缺门牌；若有缺门牌，优先建议打缺门。",
+      "再判断当前手牌更接近标准胡、七对、碰碰胡、清一色、将对或将七对。",
+      "若2、5、8数量和对子数量很多，优先评估将对、将七对、将龙七对路线。",
+      "若对子很多且没有碰杠，优先评估七对及龙七对路线。",
+      "若同一花色数量明显占优，优先评估清一色路线。",
+      "只给出出牌建议时，要解释建议牌为什么价值最低，以及保留哪些搭子、对子或番型机会。"
+    ],
+    "avoid_assumptions": [
+      "不要加入字牌、风牌、三元牌相关番型。",
+      "不要建议吃牌，因为规则明确不能吃。",
+      "不要按国标麻将、日本立直麻将或广东麻将的番型表推断。",
+      "没有截图证据时，不要新增未列出的番型。"
+    ],
+    "response_style": [
+      "面向新手时，先给结论，再用1到3句解释。",
+      "实战建议应包含：推荐打牌、备选打牌、当前可能路线、需要注意的危险点。",
+      "如果截图牌面无法识别，应要求用户补充手牌文字或更清晰截图。"
+    ]
+  }
+}

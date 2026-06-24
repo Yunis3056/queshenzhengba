@@ -1,0 +1,49 @@
+{
+  "source_image": "D:\\code\\project\\queshenzhengba\\watch\\inbox\\queshen_20260622_143012_280693.png",
+  "output_dir": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\queshen_20260622_143012_280693",
+  "region_crops": {
+    "hand": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\queshen_20260622_143012_280693\\hand_region.png",
+    "drawn_tile": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\queshen_20260622_143012_280693\\drawn_tile_region.png",
+    "self_melds": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\queshen_20260622_143012_280693\\self_melds_region.png"
+  },
+  "previews": {
+    "hand": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\queshen_20260622_143012_280693\\hand_preview.png",
+    "drawn_tile": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\queshen_20260622_143012_280693\\drawn_tile_preview.png",
+    "self_melds": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\queshen_20260622_143012_280693\\self_melds_preview.png"
+  },
+  "candidates": [
+    {
+      "region_key": "hand",
+      "index": 1,
+      "bbox": {
+        "x": 245,
+        "y": 535,
+        "width": 770,
+        "height": 170
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\queshen_20260622_143012_280693\\hand_01_unknown.png"
+    },
+    {
+      "region_key": "drawn_tile",
+      "index": 1,
+      "bbox": {
+        "x": 1000,
+        "y": 520,
+        "width": 265,
+        "height": 180
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\queshen_20260622_143012_280693\\drawn_tile_01_unknown.png"
+    },
+    {
+      "region_key": "self_melds",
+      "index": 1,
+      "bbox": {
+        "x": 738,
+        "y": 430,
+        "width": 527,
+        "height": 155
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\queshen_20260622_143012_280693\\self_melds_01_unknown.png"
+    }
+  ]
+}

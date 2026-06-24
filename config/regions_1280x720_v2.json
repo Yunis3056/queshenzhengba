@@ -1,0 +1,102 @@
+{
+  "game_area": {
+    "x": 0,
+    "y": 0,
+    "width": 1280,
+    "height": 720
+  },
+  "hand": {
+    "x": 245,
+    "y": 535,
+    "width": 770,
+    "height": 170
+  },
+  "drawn_tile": {
+    "x": 1000,
+    "y": 520,
+    "width": 265,
+    "height": 180
+  },
+  "self_melds": {
+    "x": 610,
+    "y": 430,
+    "width": 655,
+    "height": 155
+  },
+  "turn_timer": {
+    "x": 555,
+    "y": 245,
+    "width": 170,
+    "height": 145
+  },
+  "self_info": {
+    "x": 0,
+    "y": 575,
+    "width": 210,
+    "height": 135
+  },
+  "opponent_discards": {
+    "left": {
+      "x": 360,
+      "y": 160,
+      "width": 180,
+      "height": 245
+    },
+    "top": {
+      "x": 520,
+      "y": 80,
+      "width": 290,
+      "height": 160
+    },
+    "right": {
+      "x": 750,
+      "y": 180,
+      "width": 175,
+      "height": 255
+    }
+  },
+  "opponent_melds": {
+    "left": {
+      "x": 80,
+      "y": 160,
+      "width": 240,
+      "height": 385
+    },
+    "top": {
+      "x": 220,
+      "y": 70,
+      "width": 360,
+      "height": 70
+    },
+    "right": {
+      "x": 920,
+      "y": 70,
+      "width": 215,
+      "height": 260
+    }
+  },
+  "center_discards": {
+    "x": 410,
+    "y": 165,
+    "width": 490,
+    "height": 345
+  },
+  "player_info": {
+    "left_top": {
+      "x": 0,
+      "y": 60,
+      "width": 230,
+      "height": 95
+    },
+    "right_top": {
+      "x": 930,
+      "y": 60,
+      "width": 290,
+      "height": 110
+    }
+  },
+  "ui": {
+    "layout_profile": "1280x720_v2",
+    "notes": "L/turn_timer 是出牌倒计时，不是牌墙。self_melds 已加长以覆盖多组碰杠。"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "screenshot_path": "C:\\Users\\Yunis\\Documents\\Codex\\2026-06-22\\ni\\samples\\screenshots\\queshen_20260622_134145_246976.png",
+  "game_state": {
+    "missing_suit": null,
+    "hand": [],
+    "drawn_tile": null,
+    "self_melds": [],
+    "opponent_discards": {
+      "left": [],
+      "top": [],
+      "right": []
+    },
+    "opponent_melds": {
+      "left": [],
+      "top": [],
+      "right": []
+    },
+    "visible_tiles": [],
+    "recognition_confidence": 0.0,
+    "uncertain_tiles": []
+  },
+  "recommendation": {
+    "recommended_discard": null,
+    "alternatives": [],
+    "route": [],
+    "reason": "没有识别到手牌，先重新截图或手动修正牌面。",
+    "risk_notes": [
+      "hand_empty"
+    ],
+    "confidence": 0.0,
+    "discard_scores": {}
+  }
+}

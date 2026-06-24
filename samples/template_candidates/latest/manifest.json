@@ -1,0 +1,393 @@
+{
+  "source_image": "watch\\frames\\latest.png",
+  "output_dir": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest",
+  "region_crops": {
+    "hand": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\hand_region.png",
+    "drawn_tile": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\drawn_tile_region.png",
+    "self_melds": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\self_melds_region.png",
+    "opponent_discards.left": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_left_region.png",
+    "opponent_discards.top": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_top_region.png",
+    "opponent_discards.right": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_right_region.png",
+    "opponent_melds.left": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_melds_left_region.png",
+    "opponent_melds.top": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_melds_top_region.png",
+    "opponent_melds.right": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_melds_right_region.png",
+    "center_discards": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\center_discards_region.png"
+  },
+  "previews": {
+    "hand": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\hand_preview.png",
+    "drawn_tile": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\drawn_tile_preview.png",
+    "self_melds": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\self_melds_preview.png",
+    "opponent_discards.left": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_left_preview.png",
+    "opponent_discards.top": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_top_preview.png",
+    "opponent_discards.right": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_right_preview.png",
+    "opponent_melds.left": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_melds_left_preview.png",
+    "opponent_melds.top": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_melds_top_preview.png",
+    "opponent_melds.right": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_melds_right_preview.png",
+    "center_discards": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\center_discards_preview.png"
+  },
+  "candidates": [
+    {
+      "region_key": "drawn_tile",
+      "index": 1,
+      "bbox": {
+        "x": 1000,
+        "y": 520,
+        "width": 136,
+        "height": 29
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\drawn_tile_01_unknown.png"
+    },
+    {
+      "region_key": "self_melds",
+      "index": 1,
+      "bbox": {
+        "x": 744,
+        "y": 430,
+        "width": 347,
+        "height": 117
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\self_melds_01_unknown.png"
+    },
+    {
+      "region_key": "self_melds",
+      "index": 2,
+      "bbox": {
+        "x": 860,
+        "y": 441,
+        "width": 116,
+        "height": 28
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\self_melds_02_unknown.png"
+    },
+    {
+      "region_key": "opponent_discards.left",
+      "index": 1,
+      "bbox": {
+        "x": 360,
+        "y": 169,
+        "width": 180,
+        "height": 236
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_left_01_unknown.png"
+    },
+    {
+      "region_key": "opponent_discards.left",
+      "index": 2,
+      "bbox": {
+        "x": 425,
+        "y": 160,
+        "width": 79,
+        "height": 104
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_left_02_unknown.png"
+    },
+    {
+      "region_key": "opponent_discards.left",
+      "index": 3,
+      "bbox": {
+        "x": 476,
+        "y": 160,
+        "width": 62,
+        "height": 72
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_left_03_unknown.png"
+    },
+    {
+      "region_key": "opponent_discards.top",
+      "index": 1,
+      "bbox": {
+        "x": 520,
+        "y": 80,
+        "width": 156,
+        "height": 122
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_top_01_unknown.png"
+    },
+    {
+      "region_key": "opponent_discards.top",
+      "index": 2,
+      "bbox": {
+        "x": 520,
+        "y": 80,
+        "width": 43,
+        "height": 56
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_top_02_unknown.png"
+    },
+    {
+      "region_key": "opponent_discards.top",
+      "index": 3,
+      "bbox": {
+        "x": 642,
+        "y": 80,
+        "width": 81,
+        "height": 35
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_top_03_unknown.png"
+    },
+    {
+      "region_key": "opponent_discards.top",
+      "index": 4,
+      "bbox": {
+        "x": 755,
+        "y": 80,
+        "width": 55,
+        "height": 104
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_top_04_unknown.png"
+    },
+    {
+      "region_key": "opponent_discards.top",
+      "index": 5,
+      "bbox": {
+        "x": 568,
+        "y": 124,
+        "width": 88,
+        "height": 32
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_top_05_unknown.png"
+    },
+    {
+      "region_key": "opponent_discards.top",
+      "index": 6,
+      "bbox": {
+        "x": 769,
+        "y": 163,
+        "width": 41,
+        "height": 49
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_top_06_unknown.png"
+    },
+    {
+      "region_key": "opponent_discards.top",
+      "index": 7,
+      "bbox": {
+        "x": 520,
+        "y": 171,
+        "width": 32,
+        "height": 54
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_top_07_unknown.png"
+    },
+    {
+      "region_key": "opponent_discards.right",
+      "index": 1,
+      "bbox": {
+        "x": 750,
+        "y": 180,
+        "width": 175,
+        "height": 73
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_right_01_unknown.png"
+    },
+    {
+      "region_key": "opponent_discards.right",
+      "index": 2,
+      "bbox": {
+        "x": 750,
+        "y": 289,
+        "width": 175,
+        "height": 146
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_right_02_unknown.png"
+    },
+    {
+      "region_key": "opponent_discards.right",
+      "index": 3,
+      "bbox": {
+        "x": 798,
+        "y": 324,
+        "width": 127,
+        "height": 111
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_discards_right_03_unknown.png"
+    },
+    {
+      "region_key": "opponent_melds.left",
+      "index": 1,
+      "bbox": {
+        "x": 80,
+        "y": 200,
+        "width": 240,
+        "height": 345
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_melds_left_01_unknown.png"
+    },
+    {
+      "region_key": "opponent_melds.top",
+      "index": 1,
+      "bbox": {
+        "x": 220,
+        "y": 85,
+        "width": 25,
+        "height": 55
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_melds_top_01_unknown.png"
+    },
+    {
+      "region_key": "opponent_melds.top",
+      "index": 2,
+      "bbox": {
+        "x": 400,
+        "y": 70,
+        "width": 57,
+        "height": 35
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_melds_top_02_unknown.png"
+    },
+    {
+      "region_key": "opponent_melds.top",
+      "index": 3,
+      "bbox": {
+        "x": 416,
+        "y": 70,
+        "width": 98,
+        "height": 70
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_melds_top_03_unknown.png"
+    },
+    {
+      "region_key": "opponent_melds.top",
+      "index": 4,
+      "bbox": {
+        "x": 460,
+        "y": 70,
+        "width": 112,
+        "height": 70
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_melds_top_04_unknown.png"
+    },
+    {
+      "region_key": "opponent_melds.top",
+      "index": 5,
+      "bbox": {
+        "x": 527,
+        "y": 70,
+        "width": 53,
+        "height": 70
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_melds_top_05_unknown.png"
+    },
+    {
+      "region_key": "opponent_melds.right",
+      "index": 1,
+      "bbox": {
+        "x": 920,
+        "y": 70,
+        "width": 131,
+        "height": 124
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_melds_right_01_unknown.png"
+    },
+    {
+      "region_key": "opponent_melds.right",
+      "index": 2,
+      "bbox": {
+        "x": 920,
+        "y": 289,
+        "width": 106,
+        "height": 28
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\opponent_melds_right_02_unknown.png"
+    },
+    {
+      "region_key": "center_discards",
+      "index": 1,
+      "bbox": {
+        "x": 451,
+        "y": 165,
+        "width": 83,
+        "height": 63
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\center_discards_01_unknown.png"
+    },
+    {
+      "region_key": "center_discards",
+      "index": 2,
+      "bbox": {
+        "x": 509,
+        "y": 171,
+        "width": 43,
+        "height": 65
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\center_discards_02_unknown.png"
+    },
+    {
+      "region_key": "center_discards",
+      "index": 3,
+      "bbox": {
+        "x": 769,
+        "y": 165,
+        "width": 131,
+        "height": 62
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\center_discards_03_unknown.png"
+    },
+    {
+      "region_key": "center_discards",
+      "index": 4,
+      "bbox": {
+        "x": 572,
+        "y": 211,
+        "width": 37,
+        "height": 70
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\center_discards_04_unknown.png"
+    },
+    {
+      "region_key": "center_discards",
+      "index": 5,
+      "bbox": {
+        "x": 410,
+        "y": 263,
+        "width": 102,
+        "height": 108
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\center_discards_05_unknown.png"
+    },
+    {
+      "region_key": "center_discards",
+      "index": 6,
+      "bbox": {
+        "x": 593,
+        "y": 269,
+        "width": 57,
+        "height": 67
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\center_discards_06_unknown.png"
+    },
+    {
+      "region_key": "center_discards",
+      "index": 7,
+      "bbox": {
+        "x": 726,
+        "y": 290,
+        "width": 174,
+        "height": 220
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\center_discards_07_unknown.png"
+    },
+    {
+      "region_key": "center_discards",
+      "index": 8,
+      "bbox": {
+        "x": 410,
+        "y": 408,
+        "width": 106,
+        "height": 77
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\center_discards_08_unknown.png"
+    },
+    {
+      "region_key": "center_discards",
+      "index": 9,
+      "bbox": {
+        "x": 508,
+        "y": 420,
+        "width": 71,
+        "height": 90
+      },
+      "path": "D:\\code\\project\\queshenzhengba\\samples\\template_candidates\\latest\\center_discards_09_unknown.png"
+    }
+  ]
+}

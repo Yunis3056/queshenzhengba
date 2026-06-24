@@ -1,0 +1,21 @@
+{
+  "game_area": null,
+  "hand": null,
+  "self_melds": null,
+  "dingque": null,
+  "opponent_discards": {
+    "left": null,
+    "top": null,
+    "right": null
+  },
+  "opponent_melds": {
+    "left": null,
+    "top": null,
+    "right": null
+  },
+  "ui": {
+    "theme": "dark_fluent",
+    "always_on_top": true,
+    "compact_mode": false
+  }
+}

@@ -1,0 +1,439 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/yanyun-queshen-rules.schema.json",
+  "title": "Yanyun Queshen Zhengba Mahjong Ruleset",
+  "description": "A machine-readable ruleset schema for training or grounding an AI agent on the Mahjong-like Queshen Zhengba mode in Where Winds Meet / Yan Yun Shi Liu Sheng.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "ruleset_id",
+    "game_title",
+    "mode_title",
+    "language",
+    "tile_set",
+    "round_rules",
+    "win_shape_rules",
+    "scoring_model",
+    "fan_patterns",
+    "agent_guidance"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this JSON data contract.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "ruleset_id": {
+      "type": "string",
+      "description": "Stable machine identifier for this ruleset.",
+      "pattern": "^[a-z0-9_\\-]+$"
+    },
+    "game_title": {
+      "type": "string"
+    },
+    "mode_title": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string",
+      "description": "BCP-47 language tag for human-readable labels.",
+      "examples": ["zh-CN"]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "enum": ["in_game_screenshot", "official_document", "community_guide", "manual_transcription", "mixed"]
+        },
+        "source_description": {
+          "type": "string"
+        },
+        "captured_at": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        }
+      }
+    },
+    "tile_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["suits", "ranks", "copies_per_tile", "total_tiles", "has_honor_tiles", "can_chi", "can_peng", "can_gang"],
+      "properties": {
+        "suits": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/suit"
+          }
+        },
+        "ranks": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9
+          },
+          "minItems": 9,
+          "maxItems": 9
+        },
+        "copies_per_tile": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "total_tiles": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "has_honor_tiles": {
+          "type": "boolean"
+        },
+        "can_chi": {
+          "type": "boolean"
+        },
+        "can_peng": {
+          "type": "boolean"
+        },
+        "can_gang": {
+          "type": "boolean"
+        }
+      }
+    },
+    "round_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dingque", "winning", "round_end", "penalties"],
+      "properties": {
+        "dingque": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled", "description", "missing_suit_count", "must_discard_missing_suit_when_drawn", "can_change_missing_suit_mid_round", "winning_hand_max_suit_count"],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "description": {
+              "type": "string"
+            },
+            "missing_suit_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "must_discard_missing_suit_when_drawn": {
+              "type": "boolean"
+            },
+            "can_change_missing_suit_mid_round": {
+              "type": "boolean"
+            },
+            "winning_hand_max_suit_count": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "winning": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["multiple_winners_on_one_discard", "round_continues_after_win", "round_continues_until"],
+          "properties": {
+            "multiple_winners_on_one_discard": {
+              "type": "boolean"
+            },
+            "round_continues_after_win": {
+              "type": "boolean"
+            },
+            "round_continues_until": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "round_end": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["wall_exhaustion_allowed", "refresh_chips_after_round"],
+          "properties": {
+            "wall_exhaustion_allowed": {
+              "type": "boolean"
+            },
+            "refresh_chips_after_round": {
+              "type": "boolean"
+            }
+          }
+        },
+        "penalties": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label", "description"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "win_shape_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["standard_hand", "seven_pairs", "notes"],
+      "properties": {
+        "standard_hand": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "description", "meld_count", "pair_count"],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "meld_count": {
+              "type": "integer"
+            },
+            "pair_count": {
+              "type": "integer"
+            }
+          }
+        },
+        "seven_pairs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "description", "pair_count", "concealed_only"],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "pair_count": {
+              "type": "integer"
+            },
+            "concealed_only": {
+              "type": "boolean"
+            }
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "scoring_model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unit", "composition", "stacking_policy"],
+      "properties": {
+        "unit": {
+          "type": "string",
+          "enum": ["multiplier", "fan", "points"]
+        },
+        "composition": {
+          "type": "string",
+          "enum": ["multiplicative", "additive", "unknown"]
+        },
+        "stacking_policy": {
+          "type": "string",
+          "description": "Human-readable summary of how compatible fan patterns stack."
+        }
+      }
+    },
+    "fan_patterns": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/fanPattern"
+      }
+    },
+    "agent_guidance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision_priorities", "avoid_assumptions", "response_style"],
+      "properties": {
+        "decision_priorities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "avoid_assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "response_style": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "suit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label_zh", "notation"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": ["wan", "tong", "tiao"]
+        },
+        "label_zh": {
+          "type": "string"
+        },
+        "notation": {
+          "type": "string"
+        }
+      }
+    },
+    "fanPattern": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label_zh",
+        "multiplier",
+        "category",
+        "description",
+        "requirements",
+        "excludes"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_\\-]+$"
+        },
+        "label_zh": {
+          "type": "string"
+        },
+        "multiplier": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "category": {
+          "type": "string",
+          "enum": ["small", "medium", "large", "huge", "special"]
+        },
+        "description": {
+          "type": "string"
+        },
+        "requirements": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "hand_shape": {
+              "type": "string",
+              "enum": ["standard", "seven_pairs", "any", "single_wait_after_melds"]
+            },
+            "concealed_only": {
+              "type": "boolean"
+            },
+            "requires_self_draw": {
+              "type": "boolean"
+            },
+            "requires_discard_win": {
+              "type": "boolean"
+            },
+            "allowed_suits": {
+              "type": "string",
+              "enum": ["one_suit", "two_or_fewer_suits", "any"]
+            },
+            "only_ranks": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9
+              }
+            },
+            "forbidden_ranks": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9
+              }
+            },
+            "each_meld_contains_any_rank": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9
+              }
+            },
+            "quad_group_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "gang_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pair_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "melds_all_triplets_or_quads": {
+              "type": "boolean"
+            },
+            "all_other_tiles_melded": {
+              "type": "boolean"
+            },
+            "win_timing": {
+              "type": "string",
+              "enum": ["dealer_initial_hand", "non_dealer_first_draw", "last_wall_tile", "after_gang_draw", "opponent_gang_tile", "normal", "any"]
+            },
+            "remaining_hand_tile_count": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "all_other_tiles_are_melded_or_ganged": {
+              "type": "boolean"
+            }
+          }
+        },
+        "excludes": {
+          "type": "array",
+          "description": "Fan pattern ids that this pattern explicitly does not count together with.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_text_zh": {
+          "type": "string"
+        },
+        "agent_notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

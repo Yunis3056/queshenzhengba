@@ -1,0 +1,576 @@
+{
+  "source_image": "watch\\frames\\rounds\\round_20260623_003606\\frame_20260623_003849_284433.png",
+  "output_dir": "outputs\\candidate_export_upright\\frame_20260623_003849_284433",
+  "region_crops": {
+    "hand": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\hand_region.png",
+    "drawn_tile": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\drawn_tile_region.png",
+    "self_melds": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\self_melds_region.png",
+    "opponent_discards.left": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_discards_left_region.png",
+    "opponent_discards.top": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_discards_top_region.png",
+    "opponent_discards.right": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_discards_right_region.png",
+    "opponent_melds.left": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_left_region.png",
+    "opponent_melds.top": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_top_region.png",
+    "opponent_melds.right": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_right_region.png",
+    "center_discards": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\center_discards_region.png"
+  },
+  "previews": {
+    "hand": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\hand_preview.png",
+    "drawn_tile": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\drawn_tile_preview.png",
+    "self_melds": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\self_melds_preview.png",
+    "opponent_discards.left": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_discards_left_preview.png",
+    "opponent_discards.top": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_discards_top_preview.png",
+    "opponent_discards.right": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_discards_right_preview.png",
+    "opponent_melds.left": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_left_preview.png",
+    "opponent_melds.top": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_top_preview.png",
+    "opponent_melds.right": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_right_preview.png",
+    "center_discards": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\center_discards_preview.png"
+  },
+  "candidates": [
+    {
+      "region_key": "hand",
+      "index": 1,
+      "bbox": {
+        "x": 14,
+        "y": 17,
+        "width": 62,
+        "height": 87
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\hand_01_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "hand",
+      "index": 2,
+      "bbox": {
+        "x": 76,
+        "y": 17,
+        "width": 62,
+        "height": 87
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\hand_02_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "hand",
+      "index": 3,
+      "bbox": {
+        "x": 138,
+        "y": 17,
+        "width": 61,
+        "height": 87
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\hand_03_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "hand",
+      "index": 4,
+      "bbox": {
+        "x": 199,
+        "y": 17,
+        "width": 62,
+        "height": 87
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\hand_04_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "hand",
+      "index": 5,
+      "bbox": {
+        "x": 261,
+        "y": 17,
+        "width": 62,
+        "height": 87
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\hand_05_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "hand",
+      "index": 6,
+      "bbox": {
+        "x": 323,
+        "y": 17,
+        "width": 62,
+        "height": 87
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\hand_06_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "hand",
+      "index": 7,
+      "bbox": {
+        "x": 385,
+        "y": 17,
+        "width": 62,
+        "height": 87
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\hand_07_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "hand",
+      "index": 8,
+      "bbox": {
+        "x": 447,
+        "y": 17,
+        "width": 61,
+        "height": 87
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\hand_08_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "hand",
+      "index": 9,
+      "bbox": {
+        "x": 508,
+        "y": 17,
+        "width": 62,
+        "height": 87
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\hand_09_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "hand",
+      "index": 10,
+      "bbox": {
+        "x": 570,
+        "y": 17,
+        "width": 62,
+        "height": 87
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\hand_10_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "self_melds",
+      "index": 1,
+      "bbox": {
+        "x": 158,
+        "y": 0,
+        "width": 67,
+        "height": 92
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\self_melds_01_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "self_melds",
+      "index": 2,
+      "bbox": {
+        "x": 225,
+        "y": 0,
+        "width": 68,
+        "height": 92
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\self_melds_02_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "self_melds",
+      "index": 3,
+      "bbox": {
+        "x": 293,
+        "y": 0,
+        "width": 67,
+        "height": 92
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\self_melds_03_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "self_melds",
+      "index": 4,
+      "bbox": {
+        "x": 360,
+        "y": 0,
+        "width": 67,
+        "height": 92
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\self_melds_04_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "self_melds",
+      "index": 5,
+      "bbox": {
+        "x": 427,
+        "y": 0,
+        "width": 68,
+        "height": 92
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\self_melds_05_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "self_melds",
+      "index": 6,
+      "bbox": {
+        "x": 495,
+        "y": 0,
+        "width": 67,
+        "height": 92
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\self_melds_06_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_discards.left",
+      "index": 1,
+      "bbox": {
+        "x": 14,
+        "y": 0,
+        "width": 26,
+        "height": 74
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_discards_left_01_unknown.png",
+      "rotation_degrees": 90,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_discards.left",
+      "index": 2,
+      "bbox": {
+        "x": 36,
+        "y": 0,
+        "width": 234,
+        "height": 210
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_discards_left_02_unknown.png",
+      "rotation_degrees": 90,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_discards.top",
+      "index": 1,
+      "bbox": {
+        "x": 29,
+        "y": 0,
+        "width": 87,
+        "height": 106
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_discards_top_01_unknown.png",
+      "rotation_degrees": 180,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_discards.top",
+      "index": 2,
+      "bbox": {
+        "x": 116,
+        "y": 0,
+        "width": 87,
+        "height": 106
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_discards_top_02_unknown.png",
+      "rotation_degrees": 180,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_discards.top",
+      "index": 3,
+      "bbox": {
+        "x": 154,
+        "y": 0,
+        "width": 30,
+        "height": 49
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_discards_top_03_unknown.png",
+      "rotation_degrees": 180,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_discards.top",
+      "index": 4,
+      "bbox": {
+        "x": 203,
+        "y": 0,
+        "width": 87,
+        "height": 106
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_discards_top_04_unknown.png",
+      "rotation_degrees": 180,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_discards.right",
+      "index": 1,
+      "bbox": {
+        "x": 52,
+        "y": 0,
+        "width": 89,
+        "height": 112
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_discards_right_01_unknown.png",
+      "rotation_degrees": -90,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_discards.right",
+      "index": 2,
+      "bbox": {
+        "x": 141,
+        "y": 0,
+        "width": 89,
+        "height": 112
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_discards_right_02_unknown.png",
+      "rotation_degrees": -90,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.left",
+      "index": 1,
+      "bbox": {
+        "x": 3,
+        "y": 0,
+        "width": 122,
+        "height": 175
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_left_01_unknown.png",
+      "rotation_degrees": 90,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.left",
+      "index": 2,
+      "bbox": {
+        "x": 125,
+        "y": 0,
+        "width": 123,
+        "height": 175
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_left_02_unknown.png",
+      "rotation_degrees": 90,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.left",
+      "index": 3,
+      "bbox": {
+        "x": 248,
+        "y": 0,
+        "width": 122,
+        "height": 175
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_left_03_unknown.png",
+      "rotation_degrees": 90,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.top",
+      "index": 1,
+      "bbox": {
+        "x": 0,
+        "y": 0,
+        "width": 71,
+        "height": 100
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_top_01_unknown.png",
+      "rotation_degrees": 180,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.top",
+      "index": 2,
+      "bbox": {
+        "x": 71,
+        "y": 0,
+        "width": 70,
+        "height": 100
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_top_02_unknown.png",
+      "rotation_degrees": 180,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.top",
+      "index": 3,
+      "bbox": {
+        "x": 141,
+        "y": 0,
+        "width": 71,
+        "height": 100
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_top_03_unknown.png",
+      "rotation_degrees": 180,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.top",
+      "index": 4,
+      "bbox": {
+        "x": 212,
+        "y": 0,
+        "width": 70,
+        "height": 100
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_top_04_unknown.png",
+      "rotation_degrees": 180,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.top",
+      "index": 5,
+      "bbox": {
+        "x": 282,
+        "y": 0,
+        "width": 71,
+        "height": 100
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_top_05_unknown.png",
+      "rotation_degrees": 180,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.top",
+      "index": 6,
+      "bbox": {
+        "x": 353,
+        "y": 0,
+        "width": 71,
+        "height": 100
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_top_06_unknown.png",
+      "rotation_degrees": 180,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.top",
+      "index": 7,
+      "bbox": {
+        "x": 424,
+        "y": 0,
+        "width": 70,
+        "height": 100
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_top_07_unknown.png",
+      "rotation_degrees": 180,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.top",
+      "index": 8,
+      "bbox": {
+        "x": 494,
+        "y": 0,
+        "width": 71,
+        "height": 100
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_top_08_unknown.png",
+      "rotation_degrees": 180,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.right",
+      "index": 1,
+      "bbox": {
+        "x": 0,
+        "y": 0,
+        "width": 90,
+        "height": 135
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_right_01_unknown.png",
+      "rotation_degrees": -90,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.right",
+      "index": 2,
+      "bbox": {
+        "x": 90,
+        "y": 0,
+        "width": 90,
+        "height": 135
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_right_02_unknown.png",
+      "rotation_degrees": -90,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.right",
+      "index": 3,
+      "bbox": {
+        "x": 180,
+        "y": 0,
+        "width": 90,
+        "height": 135
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_right_03_unknown.png",
+      "rotation_degrees": -90,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "opponent_melds.right",
+      "index": 4,
+      "bbox": {
+        "x": 270,
+        "y": 0,
+        "width": 90,
+        "height": 135
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\opponent_melds_right_04_unknown.png",
+      "rotation_degrees": -90,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "center_discards",
+      "index": 1,
+      "bbox": {
+        "x": 0,
+        "y": 29,
+        "width": 216,
+        "height": 264
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\center_discards_01_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "center_discards",
+      "index": 2,
+      "bbox": {
+        "x": 216,
+        "y": 29,
+        "width": 216,
+        "height": 264
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\center_discards_02_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    },
+    {
+      "region_key": "center_discards",
+      "index": 3,
+      "bbox": {
+        "x": 256,
+        "y": 86,
+        "width": 30,
+        "height": 101
+      },
+      "path": "outputs\\candidate_export_upright\\frame_20260623_003849_284433\\center_discards_03_unknown.png",
+      "rotation_degrees": 0,
+      "bbox_space": "upright_region"
+    }
+  ]
+}

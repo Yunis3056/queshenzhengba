@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Large runtime screen-capture artifacts (machine-specific, ~1GB)
+watch/
+
+# Live calibration — rewritten by the UI, machine-specific (see CLAUDE.md)
+config/regions.json
