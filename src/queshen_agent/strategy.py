@@ -25,7 +25,7 @@ def recommend_discard(game_state: GameState, rules: RuleSet | None = None) -> Re
             alternatives=[],
             route=[],
             reason="手牌里有无法确认的牌，已用 X 标出；先不要根据猜测出牌。",
-            risk_notes=["hand_has_unknown_tiles"],
+            risk_notes=[],
             confidence=0.0,
         )
 
@@ -36,7 +36,7 @@ def recommend_discard(game_state: GameState, rules: RuleSet | None = None) -> Re
             alternatives=[],
             route=[],
             reason="没有识别到手牌，先重新截图或手动修正牌面。",
-            risk_notes=["hand_empty"],
+            risk_notes=[],
             confidence=0.0,
         )
     if len(tiles) not in (13, 14):
@@ -45,7 +45,7 @@ def recommend_discard(game_state: GameState, rules: RuleSet | None = None) -> Re
             alternatives=[],
             route=[],
             reason=f"当前识别到 {len(tiles)} 张手牌，不是完整的 13/14 张，可能处在出牌动画、胡牌后或截图遮挡中，先等待下一帧。",
-            risk_notes=["hand_count_unstable"],
+            risk_notes=[],
             confidence=0.0,
         )
 

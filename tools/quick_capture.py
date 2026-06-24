@@ -468,7 +468,7 @@ class QuickCaptureApp:
         reason_frame.grid(row=4, column=0, columnspan=3, sticky="ew", pady=(10, 4))
         reason_lbl = tk.Label(
             reason_frame, text="等待截帧...",
-            fg=T["text_main"], bg=T["bg"],
+            fg=T["gold"], bg=T["bg"],
             font=("Microsoft YaHei UI", 10),
             justify="left", anchor="w", wraplength=400,
         )
